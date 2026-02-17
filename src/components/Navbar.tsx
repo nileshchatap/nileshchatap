@@ -7,11 +7,12 @@ const Navbar = () => {
         <Link to="/" className="text-xl font-bold text-foreground">
           Nilesh <span className="text-gradient">Chatap</span>
         </Link>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-4 md:gap-6">
           <a href="#experience" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Experience</a>
           <a href="#education" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Education</a>
           <a href="#skills" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Skills</a>
           <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+          <a href="https://github.com/NileshChatap2625-Star" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
         </div>
       </div>
     </nav>
