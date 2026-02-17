@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, MapPin } from "lucide-react";
+import { Mail, Phone, Linkedin, MapPin, Github } from "lucide-react";
 
 const HeroSection = () => {
   return (
@@ -36,6 +36,14 @@ const HeroSection = () => {
               className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm text-hero-accent hover:bg-primary/20 transition-colors"
             >
               <Linkedin className="h-4 w-4" /> LinkedIn
+            </a>
+            <a
+              href="https://github.com/NileshChatap2625-Star"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm text-hero-accent hover:bg-primary/20 transition-colors"
+            >
+              <Github className="h-4 w-4" /> GitHub
             </a>
           </div>
         </div>
