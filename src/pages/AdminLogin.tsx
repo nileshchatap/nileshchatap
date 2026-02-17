@@ -3,14 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Shield, Mail } from "lucide-react";
+import { Shield, Mail, KeyRound, ArrowLeft } from "lucide-react";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+type Step = "email" | "otp";
+
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [step, setStep] = useState<Step>("email");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,24 +32,57 @@ const AdminLogin = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     const allowedEmails = ["nileshchatap25@gmail.com", "vishnubabalsure@gmail.com"];
-    if (!allowedEmails.includes(email.toLowerCase())) {
+    if (!allowedEmails.includes(email.toLowerCase().trim())) {
       toast({ title: "Access Denied", description: "This email is not authorized for admin access.", variant: "destructive" });
       return;
     }
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
-      email,
+      email: email.toLowerCase().trim(),
       options: { emailRedirectTo: window.location.origin + "/admin/dashboard" },
     });
     setLoading(false);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      setSent(true);
-      toast({ title: "OTP Sent!", description: "Check your email for the login link." });
+      setStep("otp");
+      toast({ title: "OTP Sent!", description: "Check your email for the 6-digit code or click the verification link." });
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.length !== 6) return;
+    setLoading(true);
+    const { error } = await supabase.auth.verifyOtp({
+      email: email.toLowerCase().trim(),
+      token: otp,
+      type: "email",
+    });
+    setLoading(false);
+    if (error) {
+      toast({ title: "Verification Failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Success!", description: "You are now logged in." });
+      navigate("/admin/dashboard");
+    }
+  };
+
+  const handleResend = async () => {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.toLowerCase().trim(),
+      options: { emailRedirectTo: window.location.origin + "/admin/dashboard" },
+    });
+    setLoading(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setOtp("");
+      toast({ title: "OTP Resent!", description: "A new code has been sent to your email." });
     }
   };
 
@@ -54,16 +91,24 @@ const AdminLogin = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-            <Shield className="h-7 w-7 text-primary" />
+            {step === "email" ? (
+              <Shield className="h-7 w-7 text-primary" />
+            ) : (
+              <KeyRound className="h-7 w-7 text-primary" />
+            )}
           </div>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
+          <CardTitle className="text-2xl">
+            {step === "email" ? "Admin Login" : "Enter Verification Code"}
+          </CardTitle>
           <CardDescription>
-            {sent ? "Check your email for the verification link" : "Enter your admin email to receive an OTP"}
+            {step === "email"
+              ? "Enter your admin email to receive a one-time password"
+              : `We sent a 6-digit code to ${email}. Enter it below or click the link in your email.`}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!sent ? (
-            <form onSubmit={handleLogin} className="space-y-4">
+          {step === "email" ? (
+            <form onSubmit={handleSendOtp} className="space-y-4">
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -76,18 +121,47 @@ const AdminLogin = () => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending OTP..." : "Send OTP"}
+                {loading ? "Sending..." : "Send OTP"}
               </Button>
             </form>
           ) : (
-            <div className="text-center space-y-4">
-              <p className="text-muted-foreground">
-                We've sent a verification link to <strong className="text-foreground">{email}</strong>. Click the link to log in.
-              </p>
-              <Button variant="outline" onClick={() => setSent(false)} className="w-full">
-                Try another email
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div className="flex justify-center">
+                <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              <Button type="submit" className="w-full" disabled={loading || otp.length !== 6}>
+                {loading ? "Verifying..." : "Verify & Login"}
               </Button>
-            </div>
+              <div className="flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => { setStep("email"); setOtp(""); }}
+                  className="gap-1"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Back
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResend}
+                  disabled={loading}
+                >
+                  Resend Code
+                </Button>
+              </div>
+            </form>
           )}
         </CardContent>
       </Card>
