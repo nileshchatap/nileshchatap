@@ -42,7 +42,9 @@ const AdminLogin = () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
-      options: { emailRedirectTo: window.location.origin + "/admin/dashboard" },
+      options: {
+        shouldCreateUser: true,
+      },
     });
     setLoading(false);
     if (error) {
@@ -75,7 +77,9 @@ const AdminLogin = () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: email.toLowerCase().trim(),
-      options: { emailRedirectTo: window.location.origin + "/admin/dashboard" },
+      options: {
+        shouldCreateUser: true,
+      },
     });
     setLoading(false);
     if (error) {
