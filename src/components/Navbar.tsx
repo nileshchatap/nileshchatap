@@ -1,8 +1,31 @@
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data } = await supabase.rpc("is_admin", { _email: session.user.email ?? "" });
+        setIsAdmin(!!data);
+      } else {
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdmin();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAdmin();
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const navLinks = [
     { href: "#experience", label: "Experience" },
@@ -28,6 +51,11 @@ const Navbar = () => {
           <a href="https://github.com/NileshChatap2625-Star" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             GitHub
           </a>
+          {isAdmin && (
+            <Link to="/admin/dashboard" className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+              <Shield className="h-4 w-4" /> Admin
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -47,6 +75,11 @@ const Navbar = () => {
           <a href="https://github.com/NileshChatap2625-Star" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             GitHub
           </a>
+          {isAdmin && (
+            <Link to="/admin/dashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+              <Shield className="h-4 w-4" /> Admin
+            </Link>
+          )}
         </div>
       )}
     </nav>
