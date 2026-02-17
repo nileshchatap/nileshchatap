@@ -8,20 +8,21 @@ const Navbar = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data } = await supabase.rpc("is_admin", { _email: session.user.email ?? "" });
-        setIsAdmin(!!data);
-      } else {
+    const checkAdmin = async (email?: string) => {
+      if (!email) {
         setIsAdmin(false);
+        return;
       }
+      const { data } = await supabase.rpc("is_admin", { _email: email });
+      setIsAdmin(!!data);
     };
 
-    checkAdmin();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      checkAdmin(session?.user?.email ?? undefined);
+    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAdmin();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      checkAdmin(session?.user?.email ?? undefined);
     });
 
     return () => subscription.unsubscribe();
