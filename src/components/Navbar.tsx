@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
 
 const Navbar = () => {
   return (
@@ -14,12 +12,6 @@ const Navbar = () => {
           <a href="#education" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Education</a>
           <a href="#skills" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Skills</a>
           <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Contact</a>
-          <Link to="/admin">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Shield className="h-4 w-4" />
-              Admin
-            </Button>
-          </Link>
         </div>
       </div>
     </nav>

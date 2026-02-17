@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 const skills = ["pandas", "Artificial Intelligence", "Machine Learning", "C", "Python", "Data Analyst", "Data Structure"];
 
 const certifications = [
+  "Google Student Ambassador Certified (6 Month)",
   "Generative AI: Prompt Engineering Basics",
   "Microsoft Azure SQL",
   "GenAI in Data Analytics",
