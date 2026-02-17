@@ -1,6 +1,4 @@
-import { Link } from "react-router-dom";
-import { Shield, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const Navbar = () => {
@@ -16,9 +14,9 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
-        <Link to="/" className="text-xl font-bold text-foreground">
+        <a href="/" className="text-xl font-bold text-foreground">
           Nilesh <span className="text-gradient">Chatap</span>
-        </Link>
+        </a>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-5">
@@ -30,12 +28,6 @@ const Navbar = () => {
           <a href="https://github.com/NileshChatap2625-Star" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             GitHub
           </a>
-          <Link to="/admin">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Shield className="h-4 w-4" />
-              Admin
-            </Button>
-          </Link>
         </div>
 
         {/* Mobile toggle */}
@@ -55,12 +47,6 @@ const Navbar = () => {
           <a href="https://github.com/NileshChatap2625-Star" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             GitHub
           </a>
-          <Link to="/admin" onClick={() => setIsOpen(false)}>
-            <Button variant="outline" size="sm" className="gap-2 w-full">
-              <Shield className="h-4 w-4" />
-              Admin Login
-            </Button>
-          </Link>
         </div>
       )}
     </nav>
