@@ -1,10 +1,16 @@
 import { Mail, Phone, Linkedin, MapPin, Github } from "lucide-react";
+import adminPhoto from "@/assets/admin-photo.jpg";
 
 const HeroSection = () => {
   return (
     <section className="hero-gradient pt-28 pb-20">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mx-auto text-center animate-fade-in">
+          <img
+            src={adminPhoto}
+            alt="Nilesh Chatap"
+            className="w-32 h-32 rounded-full object-cover mx-auto mb-6 border-4 border-primary/20 shadow-lg"
+          />
           <h1 className="text-5xl md:text-6xl font-extrabold text-hero-foreground mb-4">
             Nilesh Chatap
           </h1>
