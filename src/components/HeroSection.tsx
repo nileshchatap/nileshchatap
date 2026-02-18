@@ -1,5 +1,6 @@
-import { Mail, Phone, Linkedin, MapPin, Github } from "lucide-react";
+import { Mail, Phone, Linkedin, MapPin, Github, Download, Eye } from "lucide-react";
 import adminPhoto from "@/assets/admin-photo.jpg";
+import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   return (
@@ -51,6 +52,17 @@ const HeroSection = () => {
             >
               <Github className="h-4 w-4" /> GitHub
             </a>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
+            <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform" asChild>
+              <a href="#skills"><Eye className="h-5 w-5" /> View My Skills</a>
+            </Button>
+            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform border-primary/40" asChild>
+              <a href="#contact"><Mail className="h-5 w-5" /> Get In Touch</a>
+            </Button>
+            <Button size="lg" variant="secondary" className="gap-2 text-base px-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform" asChild>
+              <a href="#experience"><Download className="h-5 w-5" /> View Experience</a>
+            </Button>
           </div>
         </div>
       </div>
