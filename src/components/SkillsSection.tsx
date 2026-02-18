@@ -1,7 +1,7 @@
 import { Code, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const skills = ["pandas", "Artificial Intelligence", "Machine Learning", "C", "Python", "Data Analyst", "Data Structure"];
+const skills = ["pandas", "Artificial Intelligence", "Machine Learning", "C", "Python", "Data Analyst", "Data Structure", "Scikit-learn", "NumPy", "Linear Regression", "Git", "Data Science", "SQL", "DBMS", "Prompt Engineering", "Deep Learning", "LLM"];
 
 const certifications = [
   "Google Student Ambassador Certified (6 Month)",
@@ -10,6 +10,9 @@ const certifications = [
   "GenAI in Data Analytics",
   "Tata - GenAI Powered Data Analytics Job Simulation",
   "Conditional Formatting, Tables and Charts in Microsoft Excel",
+  "5-Day AI Agents Intensive Course with Google",
+  "Getting Started with Generative AI - Certified in IBM",
+  "Introduction to Gen AI - Certified in Google Cloud",
 ];
 
 const SkillsSection = () => {
