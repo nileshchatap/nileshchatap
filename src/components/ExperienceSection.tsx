@@ -1,5 +1,6 @@
-import { Briefcase } from "lucide-react";
+import { Briefcase, MapPin, Calendar } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 const experiences = [
   {
@@ -7,45 +8,70 @@ const experiences = [
     role: "Artificial Intelligence",
     period: "January 2026 - Present (2 months)",
     location: "Pune, Maharashtra, India",
+    color: "from-primary to-primary/60",
   },
   {
     company: "Edunet Foundation",
     role: "Artificial Intelligence and Machine Learning",
     period: "December 2025 - February 2026 (3 months)",
     location: "Bengaluru, Karnataka, India",
+    color: "from-accent to-accent/60",
   },
   {
     company: "Google Student Ambassador Program X MCE",
     role: "Google Student Ambassador",
     period: "September 2025 - February 2026 (6 months)",
     location: "Maharashtra, India",
+    color: "from-primary to-accent",
   },
   {
     company: "Elevate Labs",
     role: "Data Analyst Intern",
     period: "September 2025 - November 2025 (3 months)",
     location: "Bengaluru, Karnataka, India",
+    color: "from-accent to-primary/60",
   },
 ];
 
 const ExperienceSection = () => {
   return (
-    <section id="experience" className="py-20">
+    <section id="experience" className="py-24 section-gradient">
       <div className="container mx-auto px-6">
-        <div className="flex items-center gap-3 mb-10">
-          <Briefcase className="h-6 w-6 text-primary" />
-          <h2 className="text-3xl font-bold text-foreground">Experience</h2>
-        </div>
+        <motion.div
+          className="flex items-center gap-3 mb-12"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="p-2.5 rounded-xl bg-primary/10">
+            <Briefcase className="h-6 w-6 text-primary" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            Experience
+          </h2>
+        </motion.div>
+
         <div className="grid gap-6 max-w-3xl">
           {experiences.map((exp, i) => (
-            <Card key={i} className="card-hover border-l-4 border-l-primary" style={{ animationDelay: `${i * 0.1}s` }}>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-foreground">{exp.company}</h3>
-                <p className="text-primary font-medium">{exp.role}</p>
-                <p className="text-sm text-muted-foreground mt-1">{exp.period}</p>
-                <p className="text-sm text-muted-foreground">{exp.location}</p>
-              </CardContent>
-            </Card>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
+            >
+              <Card className="card-hover group border-none shadow-md overflow-hidden">
+                <div className={`h-1 bg-gradient-to-r ${exp.color}`} />
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{exp.company}</h3>
+                  <p className="text-primary font-semibold mt-1">{exp.role}</p>
+                  <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {exp.period}</span>
+                    <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> {exp.location}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </div>
