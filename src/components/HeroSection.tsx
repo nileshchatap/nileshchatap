@@ -1,69 +1,117 @@
-import { Mail, Phone, Linkedin, MapPin, Github, Download, Eye } from "lucide-react";
+import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown } from "lucide-react";
 import adminPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 const HeroSection = () => {
   return (
-    <section className="hero-gradient pt-28 pb-20">
-      <div className="container mx-auto px-6">
-        <div className="max-w-3xl mx-auto text-center animate-fade-in">
-          <img
-            src={adminPhoto}
-            alt="Nilesh Chatap"
-            className="w-32 h-32 rounded-full object-cover mx-auto mb-6 border-4 border-primary/20 shadow-lg"
-          />
-          <h1 className="text-5xl md:text-6xl font-extrabold text-hero-foreground mb-4">
-            Nilesh Chatap
-          </h1>
-          <p className="text-lg md:text-xl text-hero-muted mb-6 leading-relaxed">
+    <section className="hero-gradient pt-28 pb-24 relative overflow-hidden">
+      {/* Animated background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl floating" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl floating" style={{ animationDelay: "3s" }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl pulse-glow" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+          >
+            <img
+              src={adminPhoto}
+              alt="Nilesh Chatap"
+              className="w-36 h-36 rounded-full object-cover mx-auto mb-6 border-4 border-primary/30 shadow-2xl glow-primary"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Sparkles className="h-5 w-5 text-accent" />
+              <span className="text-sm font-medium text-accent tracking-wider uppercase">Portfolio</span>
+              <Sparkles className="h-5 w-5 text-accent" />
+            </div>
+            <h1 className="text-5xl md:text-7xl font-extrabold mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span className="text-hero-foreground">Nilesh </span>
+              <span className="text-gradient-purple">Chatap</span>
+            </h1>
+          </motion.div>
+
+          <motion.p
+            className="text-base md:text-lg text-hero-muted mb-6 leading-relaxed max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
             Intern Infosys Springboard | Edunet Foundation | Elevate Lab |
             Google Student Ambassador | C | Python | Data Analyst | Data Structure | AI
-          </p>
-          <div className="flex items-center justify-center gap-2 text-hero-muted mb-8">
-            <MapPin className="h-4 w-4" />
+          </motion.p>
+
+          <motion.div
+            className="flex items-center justify-center gap-2 text-hero-muted mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            <MapPin className="h-4 w-4 text-accent" />
             <span className="text-sm">Beed, Maharashtra, India</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="mailto:nileshchatap25@gmail.com"
-              className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm text-hero-accent hover:bg-primary/20 transition-colors"
-            >
-              <Mail className="h-4 w-4" /> nileshchatap25@gmail.com
-            </a>
-            <a
-              href="tel:9021412625"
-              className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm text-hero-accent hover:bg-primary/20 transition-colors"
-            >
-              <Phone className="h-4 w-4" /> 9021412625
-            </a>
-            <a
-              href="https://www.linkedin.com/in/nilesh-chatap-967101348"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm text-hero-accent hover:bg-primary/20 transition-colors"
-            >
-              <Linkedin className="h-4 w-4" /> LinkedIn
-            </a>
-            <a
-              href="https://github.com/NileshChatap2625-Star"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-sm text-hero-accent hover:bg-primary/20 transition-colors"
-            >
-              <Github className="h-4 w-4" /> GitHub
-            </a>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
-            <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform" asChild>
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap items-center justify-center gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          >
+            {[
+              { href: "mailto:nileshchatap25@gmail.com", icon: Mail, label: "nileshchatap25@gmail.com" },
+              { href: "tel:9021412625", icon: Phone, label: "9021412625" },
+              { href: "https://www.linkedin.com/in/nilesh-chatap-967101348", icon: Linkedin, label: "LinkedIn", external: true },
+              { href: "https://github.com/NileshChatap2625-Star", icon: Github, label: "GitHub", external: true },
+            ].map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                className="flex items-center gap-2 rounded-xl glass-dark px-4 py-2.5 text-sm text-hero-accent hover:bg-primary/20 transition-all hover:scale-105"
+              >
+                <link.icon className="h-4 w-4" /> {link.label}
+              </a>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap items-center justify-center gap-4 mt-10"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 0.5 }}
+          >
+            <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl glow-primary hover:scale-105 transition-transform bg-gradient-to-r from-primary to-primary/80" asChild>
               <a href="#skills"><Eye className="h-5 w-5" /> View My Skills</a>
             </Button>
-            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform border-primary/40" asChild>
+            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-primary/40 text-hero-foreground hover:bg-primary/10" asChild>
               <a href="#contact"><Mail className="h-5 w-5" /> Get In Touch</a>
             </Button>
-            <Button size="lg" variant="secondary" className="gap-2 text-base px-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform" asChild>
-              <a href="#experience"><Download className="h-5 w-5" /> View Experience</a>
-            </Button>
-          </div>
+          </motion.div>
+
+          <motion.div
+            className="mt-14"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.3 }}
+          >
+            <a href="#experience" className="inline-flex flex-col items-center gap-1 text-hero-muted hover:text-hero-accent transition-colors">
+              <span className="text-xs uppercase tracking-widest">Scroll Down</span>
+              <ArrowDown className="h-4 w-4 animate-bounce" />
+            </a>
+          </motion.div>
         </div>
       </div>
     </section>
