@@ -32,6 +32,162 @@ export type Database = {
         }
         Relationships: []
       }
+      site_certifications: {
+        Row: {
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      site_education: {
+        Row: {
+          created_at: string
+          degree: string
+          id: string
+          institution: string
+          period: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          degree: string
+          id?: string
+          institution: string
+          period: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          degree?: string
+          id?: string
+          institution?: string
+          period?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      site_experiences: {
+        Row: {
+          company: string
+          created_at: string
+          id: string
+          location: string
+          period: string
+          role: string
+          sort_order: number
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          id?: string
+          location?: string
+          period: string
+          role: string
+          sort_order?: number
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          id?: string
+          location?: string
+          period?: string
+          role?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      site_hero: {
+        Row: {
+          email: string
+          full_name: string
+          github_url: string | null
+          id: string
+          linkedin_url: string | null
+          location: string
+          phone: string | null
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          email?: string
+          full_name?: string
+          github_url?: string | null
+          id?: string
+          linkedin_url?: string | null
+          location?: string
+          phone?: string | null
+          tagline?: string
+          updated_at?: string
+        }
+        Update: {
+          email?: string
+          full_name?: string
+          github_url?: string | null
+          id?: string
+          linkedin_url?: string | null
+          location?: string
+          phone?: string | null
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_projects: {
+        Row: {
+          bullets: Json
+          created_at: string
+          description: string
+          id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          bullets?: Json
+          created_at?: string
+          description?: string
+          id?: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          bullets?: Json
+          created_at?: string
+          description?: string
+          id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      site_skills: {
+        Row: {
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           created_at: string
