@@ -34,7 +34,7 @@ const AdminLogin = () => {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const allowedEmails = ["nileshchatap25@gmail.com", "vishnubabalsure@gmail.com"];
+    const allowedEmails = ["nileshchatap25@gmail.com", "vishnu53@myyahoo.com"];
     if (!allowedEmails.includes(email.toLowerCase().trim())) {
       toast({ title: "Access Denied", description: "This email is not authorized for admin access.", variant: "destructive" });
       return;
