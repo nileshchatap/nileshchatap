@@ -1027,6 +1027,32 @@ const AdminDashboard = () => {
                           );
                         })()}
                       </div>
+
+                      {/* City Breakdown */}
+                      <div className="p-4 rounded-lg border border-border">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Top Cities</h3>
+                        {(() => {
+                          const cityCounts: Record<string, number> = {};
+                          visitors.forEach(v => {
+                            const city = v.city || "Unknown";
+                            cityCounts[city] = (cityCounts[city] || 0) + 1;
+                          });
+                          const cityData = Object.entries(cityCounts)
+                            .sort((a, b) => b[1] - a[1])
+                            .slice(0, 8)
+                            .map(([name, value]) => ({ name, value }));
+                          return (
+                            <ResponsiveContainer width="100%" height={200}>
+                              <BarChart data={cityData} layout="vertical">
+                                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={100} />
+                                <Tooltip />
+                                <Bar dataKey="value" fill="#ec4899" radius={[0, 4, 4, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          );
+                        })()}
+                      </div>
                     </div>
                   );
                 })()}
