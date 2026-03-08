@@ -89,7 +89,7 @@ const GitHubStatsSection = () => {
   ];
 
   return (
-    <section id="github" className="py-20 relative z-10">
+    <section id="github" className="py-20 hero-gradient relative z-10 border-t border-b border-white/5">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-14">
