@@ -77,8 +77,23 @@ const HeroSection = () => {
               <a href="#skills"><Eye className="h-5 w-5" /> View My Skills</a>
             </Button>
             {resumeUrl && (
-              <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform bg-gradient-to-r from-accent to-accent/80" asChild>
-                <a href={resumeUrl} target="_blank" rel="noopener noreferrer" download><Download className="h-5 w-5" /> Download Resume</a>
+              <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform bg-gradient-to-r from-accent to-accent/80" onClick={async () => {
+                try {
+                  const response = await fetch(resumeUrl);
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "resume.pdf";
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                } catch {
+                  window.open(resumeUrl, "_blank");
+                }
+              }}>
+                <Download className="h-5 w-5" /> Download Resume
               </Button>
             )}
             <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-white/40 bg-white/10 text-white hover:bg-white/20" asChild>
