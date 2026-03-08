@@ -1,5 +1,6 @@
-import { FolderOpen, ChevronRight } from "lucide-react";
+import { FolderOpen, ChevronRight, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useProjects } from "@/hooks/useSiteContent";
 
@@ -31,9 +32,10 @@ const ProjectsSection = () => {
           </h2>
         </motion.div>
 
-        <div className="grid gap-6 max-w-3xl">
+        <div className="grid gap-6 md:grid-cols-2 max-w-5xl">
           {projects.map((project, i) => {
             const bullets = Array.isArray(project.bullets) ? project.bullets as string[] : [];
+            const url = (project as any).project_url;
             return (
               <motion.div
                 key={project.id}
@@ -42,12 +44,15 @@ const ProjectsSection = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
               >
-                <Card className="card-hover group border-none shadow-md overflow-hidden">
+                <Card className="card-hover group border-none shadow-md overflow-hidden h-full flex flex-col">
                   <div className={`h-1 bg-gradient-to-r ${colors[i % colors.length]}`} />
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col flex-1">
                     <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                       {project.title}
                     </h3>
+                    {project.description && (
+                      <p className="mt-2 text-sm text-muted-foreground">{project.description}</p>
+                    )}
                     {bullets.length > 0 && (
                       <ul className="mt-3 space-y-2">
                         {bullets.map((bullet, j) => (
@@ -57,6 +62,15 @@ const ProjectsSection = () => {
                           </li>
                         ))}
                       </ul>
+                    )}
+                    {url && (
+                      <div className="mt-auto pt-4">
+                        <Button asChild size="sm" variant="outline" className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all">
+                          <a href={url} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-4 w-4" /> View Project
+                          </a>
+                        </Button>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
