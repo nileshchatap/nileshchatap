@@ -75,6 +75,11 @@ const HeroSection = () => {
             <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl glow-primary hover:scale-105 transition-transform bg-gradient-to-r from-primary to-primary/80" asChild>
               <a href="#skills"><Eye className="h-5 w-5" /> View My Skills</a>
             </Button>
+            {resumeUrl && (
+              <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform bg-gradient-to-r from-accent to-accent/80" asChild>
+                <a href={resumeUrl} target="_blank" rel="noopener noreferrer" download><Download className="h-5 w-5" /> Download Resume</a>
+              </Button>
+            )}
             <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-white/40 bg-white/10 text-white hover:bg-white/20" asChild>
               <a href="#contact"><Mail className="h-5 w-5" /> Get In Touch</a>
             </Button>
