@@ -8,7 +8,7 @@ const AboutSection = () => {
   if (!about?.content) return null;
 
   return (
-    <section id="about" className="py-20 relative">
+    <section id="about" className="py-20 relative" style={{ background: "linear-gradient(180deg, hsl(250 30% 8%) 0%, hsl(250 35% 12%) 50%, hsl(250 30% 10%) 100%)" }}>
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
