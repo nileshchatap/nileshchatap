@@ -247,6 +247,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="skills">Skills</TabsTrigger>
             <TabsTrigger value="certifications">Certifications</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="submissions">Submissions ({submissions.length})</TabsTrigger>
           </TabsList>
 
