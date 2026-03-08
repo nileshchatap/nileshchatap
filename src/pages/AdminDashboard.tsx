@@ -160,7 +160,7 @@ const AdminDashboard = () => {
   };
 
   const deleteItem = async (table: string, id: string) => {
-    await (supabase.from(table) as any).delete().eq("id", id);
+    await (supabase as any).from(table).delete().eq("id", id);
     loadAll(); invalidateAll();
   };
 
