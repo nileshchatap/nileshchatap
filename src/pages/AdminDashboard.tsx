@@ -658,6 +658,72 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          {/* Visitors Tab */}
+          <TabsContent value="visitors">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-primary" />
+                  Website Visitors ({visitorCount} total)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="p-4 rounded-lg border border-border bg-secondary/50 text-center">
+                    <p className="text-3xl font-bold text-primary">{visitorCount}</p>
+                    <p className="text-sm text-muted-foreground">Total Visitors</p>
+                  </div>
+                  <div className="p-4 rounded-lg border border-border bg-secondary/50 text-center">
+                    <p className="text-3xl font-bold text-primary">
+                      {visitors.filter(v => {
+                        const visitDate = new Date(v.visited_at);
+                        const today = new Date();
+                        return visitDate.toDateString() === today.toDateString();
+                      }).length}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Today</p>
+                  </div>
+                  <div className="p-4 rounded-lg border border-border bg-secondary/50 text-center">
+                    <p className="text-3xl font-bold text-primary">
+                      {visitors.filter(v => {
+                        const visitDate = new Date(v.visited_at);
+                        const weekAgo = new Date();
+                        weekAgo.setDate(weekAgo.getDate() - 7);
+                        return visitDate >= weekAgo;
+                      }).length}
+                    </p>
+                    <p className="text-sm text-muted-foreground">This Week</p>
+                  </div>
+                </div>
+                {visitors.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No visitors recorded yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Visitor ID</TableHead>
+                          <TableHead>Page</TableHead>
+                          <TableHead>Date & Time</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {visitors.map((v: any) => (
+                          <TableRow key={v.id}>
+                            <TableCell className="font-mono text-xs">{v.visitor_id?.slice(0, 8)}...</TableCell>
+                            <TableCell>{v.page || "/"}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {new Date(v.visited_at).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
     </div>
