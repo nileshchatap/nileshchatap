@@ -36,7 +36,7 @@ const HeroSection = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
-            <img src={adminPhoto} alt={fullName} className="w-36 h-36 rounded-full object-cover mx-auto mb-6 border-4 border-primary/30 shadow-2xl glow-primary" />
+            <img src={photoUrl || defaultPhoto} alt={fullName} className="w-36 h-36 rounded-full object-cover mx-auto mb-6 border-4 border-primary/30 shadow-2xl glow-primary" />
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}>
