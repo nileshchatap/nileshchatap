@@ -12,28 +12,32 @@ const StatsSection = () => {
   const { data: stats } = useStats();
   const { data: visitorCount } = useVisitorCount();
 
-  // Track visitor on mount - only once per unique visitor (localStorage persists across sessions)
+  // Track visitor - only once per unique device (localStorage persists forever)
   useEffect(() => {
     const trackVisit = async () => {
       let visitorId = localStorage.getItem("portfolio_visitor_id");
-      if (!visitorId) {
-        visitorId = crypto.randomUUID();
-        localStorage.setItem("portfolio_visitor_id", visitorId);
-        
-        // Get real visitor info
-        const userAgent = navigator.userAgent;
-        const screenSize = `${screen.width}x${screen.height}`;
-        const language = navigator.language;
-        const platform = navigator.platform || "Unknown";
+      if (visitorId) return; // Already tracked, don't count again
 
-        await (supabase as any).from("site_visitors").insert({
-          visitor_id: visitorId,
-          page: window.location.pathname,
-          user_agent: userAgent,
-          screen_size: screenSize,
-          language: language,
-          platform: platform,
-        });
+      visitorId = crypto.randomUUID();
+
+      // Get real visitor info
+      const userAgent = navigator.userAgent;
+      const screenSize = `${screen.width}x${screen.height}`;
+      const language = navigator.language;
+      const platform = navigator.platform || "Unknown";
+
+      const { error } = await (supabase as any).from("site_visitors").insert({
+        visitor_id: visitorId,
+        page: window.location.pathname,
+        user_agent: userAgent,
+        screen_size: screenSize,
+        language: language,
+        platform: platform,
+      });
+
+      // Only save to localStorage if insert succeeded
+      if (!error) {
+        localStorage.setItem("portfolio_visitor_id", visitorId);
       }
     };
     trackVisit();
