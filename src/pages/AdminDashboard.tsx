@@ -720,11 +720,10 @@ const AdminDashboard = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead>#</TableHead>
-                          <TableHead>Visitor Name</TableHead>
-                          <TableHead>Platform</TableHead>
+                          <TableHead>Device / OS</TableHead>
+                          <TableHead>Browser</TableHead>
                           <TableHead>Screen</TableHead>
                           <TableHead>Language</TableHead>
-                          <TableHead>Browser</TableHead>
                           <TableHead>Date & Time</TableHead>
                           <TableHead className="w-16">Action</TableHead>
                         </TableRow>
@@ -732,24 +731,46 @@ const AdminDashboard = () => {
                       <TableBody>
                         {visitors.map((v: any, idx: number) => {
                           const ua = v.user_agent || "";
+                          
+                          // Extract real browser name + version
                           let browser = "Unknown";
-                          if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
-                          else if (ua.includes("Firefox")) browser = "Firefox";
-                          else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
-                          else if (ua.includes("Edg")) browser = "Edge";
-                          else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+                          if (ua.includes("Edg/")) {
+                            const match = ua.match(/Edg\/([\d.]+)/);
+                            browser = `Edge ${match ? match[1].split('.')[0] : ""}`;
+                          } else if (ua.includes("OPR/") || ua.includes("Opera")) {
+                            const match = ua.match(/OPR\/([\d.]+)/);
+                            browser = `Opera ${match ? match[1].split('.')[0] : ""}`;
+                          } else if (ua.includes("Chrome/")) {
+                            const match = ua.match(/Chrome\/([\d.]+)/);
+                            browser = `Chrome ${match ? match[1].split('.')[0] : ""}`;
+                          } else if (ua.includes("Firefox/")) {
+                            const match = ua.match(/Firefox\/([\d.]+)/);
+                            browser = `Firefox ${match ? match[1].split('.')[0] : ""}`;
+                          } else if (ua.includes("Safari/") && !ua.includes("Chrome")) {
+                            const match = ua.match(/Version\/([\d.]+)/);
+                            browser = `Safari ${match ? match[1].split('.')[0] : ""}`;
+                          }
 
-                          // Generate a friendly visitor name
-                          const visitorName = `Visitor #${visitorCount - idx}`;
+                          // Extract real OS from user agent
+                          let os = v.platform || "Unknown";
+                          if (ua.includes("Windows NT 10")) os = "Windows 10/11";
+                          else if (ua.includes("Windows NT")) os = "Windows";
+                          else if (ua.includes("Mac OS X")) os = "macOS";
+                          else if (ua.includes("Android")) {
+                            const match = ua.match(/Android ([\d.]+)/);
+                            os = `Android ${match ? match[1] : ""}`;
+                          } else if (ua.includes("iPhone") || ua.includes("iPad")) {
+                            const match = ua.match(/OS ([\d_]+)/);
+                            os = `iOS ${match ? match[1].replace(/_/g, '.') : ""}`;
+                          } else if (ua.includes("Linux")) os = "Linux";
 
                           return (
                             <TableRow key={v.id}>
                               <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
-                              <TableCell className="font-medium text-foreground">{visitorName}</TableCell>
-                              <TableCell className="text-sm">{v.platform || "—"}</TableCell>
+                              <TableCell className="font-medium text-foreground">{os}</TableCell>
+                              <TableCell className="text-sm">{browser}</TableCell>
                               <TableCell className="text-sm">{v.screen_size || "—"}</TableCell>
                               <TableCell className="text-sm">{v.language || "—"}</TableCell>
-                              <TableCell className="text-sm">{browser}</TableCell>
                               <TableCell className="text-sm text-muted-foreground">
                                 {new Date(v.visited_at).toLocaleString()}
                               </TableCell>
