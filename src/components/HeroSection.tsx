@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown } from "lucide-react";
+import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download } from "lucide-react";
 import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -11,6 +11,7 @@ const HeroSection = () => {
   const [firstName, ...rest] = fullName.split(" ");
   const lastName = rest.join(" ");
   const photoUrl = (hero as any)?.photo_url || "";
+  const resumeUrl = (hero as any)?.resume_url || "";
   const tagline = hero?.tagline ?? "";
   const location = hero?.location ?? "";
   const email = hero?.email ?? "";
