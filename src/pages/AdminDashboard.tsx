@@ -119,6 +119,7 @@ const AdminDashboard = () => {
       photo_url: hero.photo_url, resume_url: hero.resume_url,
       twitter_url: hero.twitter_url, instagram_url: hero.instagram_url,
       youtube_url: hero.youtube_url, website_url: hero.website_url,
+      kaggle_url: hero.kaggle_url, other_url: hero.other_url, other_url_label: hero.other_url_label,
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
@@ -315,7 +316,10 @@ const AdminDashboard = () => {
                         { label: "Twitter/X URL", key: "twitter_url" },
                         { label: "Instagram URL", key: "instagram_url" },
                         { label: "YouTube URL", key: "youtube_url" },
+                        { label: "Kaggle URL", key: "kaggle_url" },
                         { label: "Website URL", key: "website_url" },
+                        { label: "Other URL", key: "other_url" },
+                        { label: "Other URL Label", key: "other_url_label" },
                       ].map(f => (
                         <div key={f.key}>
                           <label className="text-sm font-medium text-foreground">{f.label}</label>

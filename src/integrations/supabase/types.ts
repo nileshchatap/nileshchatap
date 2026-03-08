@@ -117,8 +117,11 @@ export type Database = {
           github_url: string | null
           id: string
           instagram_url: string | null
+          kaggle_url: string | null
           linkedin_url: string | null
           location: string
+          other_url: string | null
+          other_url_label: string | null
           phone: string | null
           photo_url: string | null
           resume_url: string | null
@@ -134,8 +137,11 @@ export type Database = {
           github_url?: string | null
           id?: string
           instagram_url?: string | null
+          kaggle_url?: string | null
           linkedin_url?: string | null
           location?: string
+          other_url?: string | null
+          other_url_label?: string | null
           phone?: string | null
           photo_url?: string | null
           resume_url?: string | null
@@ -151,8 +157,11 @@ export type Database = {
           github_url?: string | null
           id?: string
           instagram_url?: string | null
+          kaggle_url?: string | null
           linkedin_url?: string | null
           location?: string
+          other_url?: string | null
+          other_url_label?: string | null
           phone?: string | null
           photo_url?: string | null
           resume_url?: string | null

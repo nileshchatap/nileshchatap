@@ -32,6 +32,9 @@ const ContactForm = () => {
   const instagramUrl = (hero as any)?.instagram_url ?? "";
   const youtubeUrl = (hero as any)?.youtube_url ?? "";
   const websiteUrl = (hero as any)?.website_url ?? "";
+  const kaggleUrl = (hero as any)?.kaggle_url ?? "";
+  const otherUrl = (hero as any)?.other_url ?? "";
+  const otherUrlLabel = (hero as any)?.other_url_label ?? "Other";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +57,9 @@ const ContactForm = () => {
     ...(twitterUrl ? [{ icon: Twitter, label: "Twitter/X", value: "Follow on X", href: twitterUrl, external: true }] : []),
     ...(instagramUrl ? [{ icon: Instagram, label: "Instagram", value: "Follow on Instagram", href: instagramUrl, external: true }] : []),
     ...(youtubeUrl ? [{ icon: Youtube, label: "YouTube", value: "Subscribe on YouTube", href: youtubeUrl, external: true }] : []),
+    ...(kaggleUrl ? [{ icon: Globe, label: "Kaggle", value: "View on Kaggle", href: kaggleUrl, external: true }] : []),
     ...(websiteUrl ? [{ icon: Globe, label: "Website", value: "Visit Website", href: websiteUrl, external: true }] : []),
+    ...(otherUrl ? [{ icon: Globe, label: otherUrlLabel, value: otherUrlLabel, href: otherUrl, external: true }] : []),
   ];
 
   return (
