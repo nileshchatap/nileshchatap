@@ -353,6 +353,24 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* About Tab */}
+          <TabsContent value="about">
+            <Card>
+              <CardHeader><CardTitle>About Me</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {about && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium text-foreground">About Me Content</label>
+                      <Textarea value={about.content || ""} onChange={e => setAbout({ ...about, content: e.target.value })} rows={6} />
+                    </div>
+                    <Button onClick={saveAbout} className="gap-2"><Save className="h-4 w-4" /> Save About</Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Experience Tab */}
           <TabsContent value="experience">
             <Card>
