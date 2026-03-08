@@ -63,7 +63,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -72,6 +72,7 @@ const AdminDashboard = () => {
       supabase.from("site_certifications").select("*").order("sort_order"),
       supabase.from("site_projects").select("*").order("sort_order"),
       supabase.from("site_stats").select("*").order("sort_order"),
+      (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -81,6 +82,7 @@ const AdminDashboard = () => {
     setCertifications(cert.data || []);
     setProjects(proj.data || []);
     setStats(st.data || []);
+    setSubscribers(subs.data || []);
     setLoading(false);
   };
 
