@@ -974,6 +974,32 @@ const AdminDashboard = () => {
                           );
                         })()}
                       </div>
+
+                      {/* Language Breakdown */}
+                      <div className="p-4 rounded-lg border border-border">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Language</h3>
+                        {(() => {
+                          const langCounts: Record<string, number> = {};
+                          visitors.forEach(v => {
+                            const lang = (v.language || "Unknown").split("-")[0].toUpperCase();
+                            langCounts[lang] = (langCounts[lang] || 0) + 1;
+                          });
+                          const langData = Object.entries(langCounts)
+                            .sort((a, b) => b[1] - a[1])
+                            .slice(0, 8)
+                            .map(([name, value]) => ({ name, value }));
+                          return (
+                            <ResponsiveContainer width="100%" height={200}>
+                              <BarChart data={langData} layout="vertical">
+                                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={50} />
+                                <Tooltip />
+                                <Bar dataKey="value" fill="#06b6d4" radius={[0, 4, 4, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          );
+                        })()}
+                      </div>
                     </div>
                   );
                 })()}
