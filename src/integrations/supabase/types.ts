@@ -281,6 +281,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_visitors: {
+        Row: {
+          id: string
+          page: string | null
+          visited_at: string
+          visitor_id: string
+        }
+        Insert: {
+          id?: string
+          page?: string | null
+          visited_at?: string
+          visitor_id: string
+        }
+        Update: {
+          id?: string
+          page?: string | null
+          visited_at?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           created_at: string
