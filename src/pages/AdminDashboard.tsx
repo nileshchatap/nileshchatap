@@ -80,7 +80,7 @@ const AdminDashboard = () => {
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("site_about").select("*").limit(1).single(),
       (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }).limit(100),
-      (supabase as any).from("site_visitors").select("*", { count: "exact", head: true }),
+      supabase.rpc("unique_visitor_count" as any),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
