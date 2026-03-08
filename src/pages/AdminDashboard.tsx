@@ -117,6 +117,8 @@ const AdminDashboard = () => {
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
       photo_url: hero.photo_url, resume_url: hero.resume_url,
+      twitter_url: hero.twitter_url, instagram_url: hero.instagram_url,
+      youtube_url: hero.youtube_url, website_url: hero.website_url,
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
@@ -310,6 +312,10 @@ const AdminDashboard = () => {
                         { label: "Phone", key: "phone" },
                         { label: "LinkedIn URL", key: "linkedin_url" },
                         { label: "GitHub URL", key: "github_url" },
+                        { label: "Twitter/X URL", key: "twitter_url" },
+                        { label: "Instagram URL", key: "instagram_url" },
+                        { label: "YouTube URL", key: "youtube_url" },
+                        { label: "Website URL", key: "website_url" },
                       ].map(f => (
                         <div key={f.key}>
                           <label className="text-sm font-medium text-foreground">{f.label}</label>

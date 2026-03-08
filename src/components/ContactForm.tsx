@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Send, MessageCircle, Phone, Mail, Linkedin, Github } from "lucide-react";
+import { Send, MessageCircle, Phone, Mail, Linkedin, Github, Twitter, Instagram, Youtube, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -28,6 +28,10 @@ const ContactForm = () => {
   const phone = hero?.phone ?? "";
   const linkedinUrl = hero?.linkedin_url ?? "";
   const githubUrl = hero?.github_url ?? "";
+  const twitterUrl = (hero as any)?.twitter_url ?? "";
+  const instagramUrl = (hero as any)?.instagram_url ?? "";
+  const youtubeUrl = (hero as any)?.youtube_url ?? "";
+  const websiteUrl = (hero as any)?.website_url ?? "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +51,10 @@ const ContactForm = () => {
     ...(email ? [{ icon: Mail, label: "Email", value: email, href: `mailto:${email}` }] : []),
     ...(linkedinUrl ? [{ icon: Linkedin, label: "LinkedIn", value: "Connect on LinkedIn", href: linkedinUrl, external: true }] : []),
     ...(githubUrl ? [{ icon: Github, label: "GitHub", value: githubUrl.replace("https://github.com/", ""), href: githubUrl, external: true }] : []),
+    ...(twitterUrl ? [{ icon: Twitter, label: "Twitter/X", value: "Follow on X", href: twitterUrl, external: true }] : []),
+    ...(instagramUrl ? [{ icon: Instagram, label: "Instagram", value: "Follow on Instagram", href: instagramUrl, external: true }] : []),
+    ...(youtubeUrl ? [{ icon: Youtube, label: "YouTube", value: "Subscribe on YouTube", href: youtubeUrl, external: true }] : []),
+    ...(websiteUrl ? [{ icon: Globe, label: "Website", value: "Visit Website", href: websiteUrl, external: true }] : []),
   ];
 
   return (
