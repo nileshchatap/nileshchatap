@@ -1000,6 +1000,33 @@ const AdminDashboard = () => {
                           );
                         })()}
                       </div>
+
+                      {/* Hourly Traffic Pattern */}
+                      <div className="p-4 rounded-lg border border-border lg:col-span-2">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Hourly Traffic Pattern</h3>
+                        {(() => {
+                          const hourCounts: Record<number, number> = {};
+                          for (let h = 0; h < 24; h++) hourCounts[h] = 0;
+                          visitors.forEach(v => {
+                            const hour = new Date(v.visited_at).getHours();
+                            hourCounts[hour]++;
+                          });
+                          const hourData = Object.entries(hourCounts).map(([hour, count]) => ({
+                            hour: `${String(hour).padStart(2, "0")}:00`,
+                            visitors: count,
+                          }));
+                          return (
+                            <ResponsiveContainer width="100%" height={220}>
+                              <BarChart data={hourData}>
+                                <XAxis dataKey="hour" tick={{ fontSize: 10 }} interval={1} />
+                                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                                <Tooltip />
+                                <Bar dataKey="visitors" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          );
+                        })()}
+                      </div>
                     </div>
                   );
                 })()}
