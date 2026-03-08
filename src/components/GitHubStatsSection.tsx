@@ -1,6 +1,6 @@
-import { motion, animate } from "framer-motion";
+import { motion } from "framer-motion";
 import { Github, GitFork, Star, Code2, Users, BookOpen } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useHero } from "@/hooks/useSiteContent";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -8,7 +8,6 @@ interface GitHubUser {
   public_repos: number;
   followers: number;
   following: number;
-  public_gists: number;
   login: string;
 }
 
@@ -24,23 +23,42 @@ function extractUsername(url?: string | null): string {
   return match?.[1] ?? "NileshChatap2625-Star";
 }
 
-const AnimatedNumber = ({ value, loading }: { value: number; loading: boolean }) => {
-  const ref = useRef<HTMLSpanElement>(null);
+const CountUp = ({ end, loading }: { end: number; loading: boolean }) => {
+  const [count, setCount] = useState(0);
+  const hasAnimated = useRef(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (loading || !ref.current) return;
-    const controls = animate(0, value, {
-      duration: 1.5,
-      ease: "easeOut",
-      onUpdate: (v) => {
-        if (ref.current) ref.current.textContent = Math.round(v).toString();
+    if (loading || hasAnimated.current) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const duration = 1500;
+          const start = performance.now();
+          const step = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.round(eased * end));
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
       },
-    });
-    return () => controls.stop();
-  }, [value, loading]);
+      { threshold: 0.3 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [end, loading]);
 
   if (loading) return <Skeleton className="h-10 w-14 mx-auto mb-1 bg-white/5" />;
-  return <span ref={ref} className="text-3xl md:text-4xl font-bold text-hero-foreground">0</span>;
+  return (
+    <div ref={ref} className="text-3xl md:text-4xl font-bold text-hero-foreground">
+      {count}
+    </div>
+  );
 };
 
 const langColors: Record<string, string> = {
@@ -104,21 +122,14 @@ const GitHubStatsSection = () => {
   }, [username]);
 
   const statCards = [
-    { icon: BookOpen, label: "Repositories", value: user?.public_repos ?? 0, gradient: "from-blue-500/20 to-indigo-500/20" },
-    { icon: Star, label: "Total Stars", value: totalStars, gradient: "from-amber-500/20 to-yellow-500/20" },
-    { icon: GitFork, label: "Total Forks", value: totalForks, gradient: "from-emerald-500/20 to-teal-500/20" },
-    { icon: Users, label: "Followers", value: user?.followers ?? 0, gradient: "from-purple-500/20 to-pink-500/20" },
-  ];
-
-  const iconColors = [
-    "text-blue-400",
-    "text-amber-400",
-    "text-emerald-400",
-    "text-purple-400",
+    { icon: BookOpen, label: "Repositories", value: user?.public_repos ?? 0, color: "text-blue-400", border: "border-blue-500/20", glow: "shadow-blue-500/10" },
+    { icon: Star, label: "Total Stars", value: totalStars, color: "text-amber-400", border: "border-amber-500/20", glow: "shadow-amber-500/10" },
+    { icon: GitFork, label: "Total Forks", value: totalForks, color: "text-emerald-400", border: "border-emerald-500/20", glow: "shadow-emerald-500/10" },
+    { icon: Users, label: "Followers", value: user?.followers ?? 0, color: "text-purple-400", border: "border-purple-500/20", glow: "shadow-purple-500/10" },
   ];
 
   return (
-    <section id="github" className="py-20 hero-gradient relative overflow-hidden">
+    <section id="github" className="py-20 hero-gradient relative overflow-hidden border-t border-b border-white/5">
       <div className="container mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -129,7 +140,7 @@ const GitHubStatsSection = () => {
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-2 rounded-xl bg-primary/10 border border-primary/20">
+            <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
               <Github className="h-6 w-6 text-primary" />
             </div>
             <h2
@@ -149,26 +160,23 @@ const GitHubStatsSection = () => {
           {statCards.map((stat, i) => (
             <motion.div
               key={stat.label}
-              className={`relative group rounded-2xl border border-white/10 bg-gradient-to-br ${stat.gradient} backdrop-blur-md p-6 text-center overflow-hidden hover:border-white/20 transition-all duration-300`}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              className={`relative group rounded-2xl border ${stat.border} bg-white/[0.03] backdrop-blur-md p-6 text-center overflow-hidden hover:bg-white/[0.06] transition-all duration-300 shadow-lg ${stat.glow}`}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1, type: "spring", stiffness: 100 }}
-              whileHover={{ y: -4, scale: 1.02 }}
+              whileHover={{ y: -4 }}
             >
-              {/* Glow effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 to-transparent" />
-              
-              <stat.icon className={`h-7 w-7 ${iconColors[i]} mx-auto mb-3 drop-shadow-lg`} />
-              <AnimatedNumber value={stat.value} loading={loading} />
-              <p className="text-xs text-hero-muted mt-1 font-medium tracking-wide uppercase">{stat.label}</p>
+              <stat.icon className={`h-7 w-7 ${stat.color} mx-auto mb-3 drop-shadow-lg`} />
+              <CountUp end={stat.value} loading={loading} />
+              <p className="text-xs text-hero-muted mt-1.5 font-medium tracking-wide uppercase">{stat.label}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Top Languages */}
         <motion.div
-          className="max-w-2xl mx-auto mb-12 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6 md:p-8"
+          className="max-w-2xl mx-auto mb-12 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -227,17 +235,15 @@ const GitHubStatsSection = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <motion.a
+          <a
             href={`https://github.com/${username}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all text-sm font-medium shadow-lg shadow-primary/5"
-            whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(124, 106, 239, 0.2)" }}
-            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all text-sm font-medium"
           >
             <Github className="h-4 w-4" />
             View Full Profile
-          </motion.a>
+          </a>
         </motion.div>
       </div>
     </section>
