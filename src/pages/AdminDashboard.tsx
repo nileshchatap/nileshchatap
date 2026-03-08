@@ -32,6 +32,7 @@ const AdminDashboard = () => {
   const queryClient = useQueryClient();
 
   const [hero, setHero] = useState<any>(null);
+  const [about, setAbout] = useState<any>(null);
   const [experiences, setExperiences] = useState<any[]>([]);
   const [education, setEducation] = useState<any[]>([]);
   const [skills, setSkills] = useState<any[]>([]);
@@ -63,7 +64,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st, subs] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -73,6 +74,7 @@ const AdminDashboard = () => {
       supabase.from("site_projects").select("*").order("sort_order"),
       supabase.from("site_stats").select("*").order("sort_order"),
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
+      (supabase as any).from("site_about").select("*").limit(1).single(),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -83,13 +85,21 @@ const AdminDashboard = () => {
     setProjects(proj.data || []);
     setStats(st.data || []);
     setSubscribers(subs.data || []);
+    setAbout(ab.data);
     setLoading(false);
   };
 
   const invalidateAll = () => {
-    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects", "site_stats"].forEach(
+    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects", "site_stats", "site_about"].forEach(
       key => queryClient.invalidateQueries({ queryKey: [key] })
     );
+  };
+
+  const saveAbout = async () => {
+    if (!about) return;
+    const { error } = await (supabase as any).from("site_about").update({ content: about.content }).eq("id", about.id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "About updated!" }); invalidateAll(); }
   };
 
   const handleReorder = useCallback(async (tableName: string, items: any[], setItems: (items: any[]) => void, event: DragEndEvent) => {
@@ -248,6 +258,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="hero" className="space-y-6">
           <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="hero">Hero</TabsTrigger>
+            <TabsTrigger value="about">About Me</TabsTrigger>
             <TabsTrigger value="experience">Experience</TabsTrigger>
             <TabsTrigger value="education">Education</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>
@@ -336,6 +347,24 @@ const AdminDashboard = () => {
                       <Textarea value={hero.tagline} onChange={e => setHero({ ...hero, tagline: e.target.value })} rows={3} />
                     </div>
                     <Button onClick={saveHero} className="gap-2"><Save className="h-4 w-4" /> Save Hero</Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* About Tab */}
+          <TabsContent value="about">
+            <Card>
+              <CardHeader><CardTitle>About Me</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {about && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium text-foreground">About Me Content</label>
+                      <Textarea value={about.content || ""} onChange={e => setAbout({ ...about, content: e.target.value })} rows={6} />
+                    </div>
+                    <Button onClick={saveAbout} className="gap-2"><Save className="h-4 w-4" /> Save About</Button>
                   </>
                 )}
               </CardContent>

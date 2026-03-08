@@ -63,3 +63,12 @@ export const useStats = () =>
       return data ?? [];
     },
   });
+
+export const useAbout = () =>
+  useQuery({
+    queryKey: ["site_about"],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("site_about").select("*").limit(1).single();
+      return data;
+    },
+  });

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
+import AboutSection from "@/components/AboutSection";
 import StatsSection from "@/components/StatsSection";
 import ExperienceSection from "@/components/ExperienceSection";
 import EducationSection from "@/components/EducationSection";
@@ -33,6 +34,7 @@ const Index = () => {
       <ParticleField />
       <Navbar />
       <HeroSection />
+      <AboutSection />
       <StatsSection />
       <ExperienceSection />
       <EducationSection />
