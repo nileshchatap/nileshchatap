@@ -186,59 +186,6 @@ const GitHubStatsSection = () => {
           )}
         </motion.div>
 
-        {/* Recent Repos */}
-        <motion.div
-          className="max-w-4xl mx-auto mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <h3 className="text-lg font-semibold text-hero-foreground mb-4 flex items-center gap-2">
-            <Activity className="h-5 w-5 text-primary" /> Recent Repositories
-          </h3>
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-28 w-full rounded-xl" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {repos.slice(0, 6).map((repo) => (
-                <a
-                  key={repo.name}
-                  href={repo.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl border border-white/10 bg-card/50 backdrop-blur-sm p-4 hover:border-primary/40 transition-colors group"
-                >
-                  <p className="font-semibold text-hero-foreground group-hover:text-primary transition-colors text-sm mb-1">
-                    {repo.name}
-                  </p>
-                  {repo.description && (
-                    <p className="text-xs text-hero-muted line-clamp-2 mb-2">{repo.description}</p>
-                  )}
-                  <div className="flex items-center gap-3 text-xs text-hero-muted">
-                    {repo.language && (
-                      <span className="flex items-center gap-1">
-                        <span className={`h-2.5 w-2.5 rounded-full ${langColors[repo.language] || "bg-primary"}`} />
-                        {repo.language}
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Star className="h-3 w-3" /> {repo.stargazers_count}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <GitFork className="h-3 w-3" /> {repo.forks_count}
-                    </span>
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
         {/* Profile Link */}
         <motion.div
           className="text-center"
