@@ -490,6 +490,47 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* Stats Tab */}
+          <TabsContent value="stats">
+            <Card>
+              <CardHeader><CardTitle>Stats Counters (drag to reorder)</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_stats", stats, setStats, e)}>
+                  <SortableContext items={stats.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {stats.map(s => (
+                      <SortableItem key={s.id} id={s.id}>
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div>
+                            <p className="font-semibold text-foreground">{s.value} — {s.label}</p>
+                            <p className="text-xs text-muted-foreground">Icon: {s.icon}</p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => deleteItem("site_stats", s.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
+                <div className="border-t border-border pt-4 space-y-3">
+                  <p className="text-sm font-medium text-foreground">Add New Stat</p>
+                  <div className="grid md:grid-cols-3 gap-3">
+                    <select
+                      value={newStat.icon}
+                      onChange={e => setNewStat({ ...newStat, icon: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                    >
+                      {["Award", "Users", "FolderKanban", "Code", "BarChart3", "Briefcase", "GraduationCap", "Star"].map(ic => (
+                        <option key={ic} value={ic}>{ic}</option>
+                      ))}
+                    </select>
+                    <Input placeholder="Value (e.g. 10+)" value={newStat.value} onChange={e => setNewStat({ ...newStat, value: e.target.value })} />
+                    <Input placeholder="Label (e.g. Projects)" value={newStat.label} onChange={e => setNewStat({ ...newStat, label: e.target.value })} />
+                  </div>
+                  <Button onClick={addStat} className="gap-2"><Plus className="h-4 w-4" /> Add Stat</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Submissions Tab */}
           <TabsContent value="submissions">
             <Card>
