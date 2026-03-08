@@ -268,6 +268,29 @@ const AdminDashboard = () => {
                         )}
                       </div>
                     </div>
+                    {/* Resume Upload */}
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                      <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center">
+                        <FileText className={`h-8 w-8 ${hero.resume_url ? "text-primary" : "text-muted-foreground"}`} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm font-medium text-foreground">Resume / CV</p>
+                        {hero.resume_url && (
+                          <a href={hero.resume_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline">View current resume</a>
+                        )}
+                        <label className="cursor-pointer">
+                          <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadResume(f); }} />
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+                            <Upload className="h-4 w-4" /> {resumeUploading ? "Uploading..." : "Upload Resume"}
+                          </span>
+                        </label>
+                        {hero.resume_url && (
+                          <Button variant="destructive" size="sm" onClick={removeResume} className="gap-1 w-fit">
+                            <Trash2 className="h-3 w-3" /> Remove Resume
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                     <div className="grid md:grid-cols-2 gap-4">
                       {[
                         { label: "Full Name", key: "full_name" },
