@@ -36,6 +36,7 @@ const AdminDashboard = () => {
   const [skills, setSkills] = useState<any[]>([]);
   const [certifications, setCertifications] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
 
   const [newExp, setNewExp] = useState({ company: "", role: "", period: "", location: "" });
   const [newEdu, setNewEdu] = useState({ institution: "", degree: "", period: "" });
