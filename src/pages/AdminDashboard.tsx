@@ -93,7 +93,7 @@ const AdminDashboard = () => {
     setSubscribers(subs.data || []);
     setAbout(ab.data);
     setVisitors(vis.data || []);
-    setVisitorCount(visCount.count ?? 0);
+    setVisitorCount(visCount.data ?? 0);
     setLoading(false);
   };
 
