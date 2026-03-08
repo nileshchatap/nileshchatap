@@ -771,6 +771,7 @@ const AdminDashboard = () => {
                     </Table>
                   </div>
                 )}
+              </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
