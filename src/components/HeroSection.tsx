@@ -52,7 +52,7 @@ const HeroSection = () => {
             </h1>
           </motion.div>
 
-          <motion.p className="text-base md:text-lg text-hero-muted mb-6 leading-relaxed max-w-2xl mx-auto font-mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.3 }}>
+          <motion.p className="text-base md:text-lg text-hero-muted mb-6 leading-relaxed max-w-2xl mx-auto italic" style={{ fontFamily: "'Playfair Display', serif" }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.3 }}>
             {tagline}
           </motion.p>
 
