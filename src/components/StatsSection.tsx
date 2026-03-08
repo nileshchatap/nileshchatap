@@ -12,13 +12,14 @@ const StatsSection = () => {
   const { data: stats } = useStats();
   const { data: visitorCount } = useVisitorCount();
 
-  // Track visitor - only once per unique device (localStorage persists forever)
+  // Track every visit - same visitor_id for returning visitors
   useEffect(() => {
     const trackVisit = async () => {
       let visitorId = localStorage.getItem("portfolio_visitor_id");
-      if (visitorId) return; // Already tracked, don't count again
-
-      visitorId = crypto.randomUUID();
+      const isNewVisitor = !visitorId;
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+      }
 
       // Get real visitor info
       const userAgent = navigator.userAgent;
@@ -54,7 +55,7 @@ const StatsSection = () => {
         ip_address: ipAddress,
       });
 
-      if (!error) {
+      if (!error && isNewVisitor) {
         localStorage.setItem("portfolio_visitor_id", visitorId);
       }
     };
