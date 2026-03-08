@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import { Github, GitFork, Star, Code2, Users, BookOpen } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useHero } from "@/hooks/useSiteContent";
