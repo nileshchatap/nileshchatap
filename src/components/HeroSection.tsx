@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download } from "lucide-react";
+import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download, Twitter, Instagram, Youtube, Globe } from "lucide-react";
 import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -19,12 +19,20 @@ const HeroSection = () => {
   const phone = hero?.phone ?? "";
   const linkedinUrl = hero?.linkedin_url ?? "";
   const githubUrl = hero?.github_url ?? "";
+  const twitterUrl = (hero as any)?.twitter_url ?? "";
+  const instagramUrl = (hero as any)?.instagram_url ?? "";
+  const youtubeUrl = (hero as any)?.youtube_url ?? "";
+  const websiteUrl = (hero as any)?.website_url ?? "";
 
   const contactLinks = [
     ...(email ? [{ href: `mailto:${email}`, icon: Mail, label: email }] : []),
     ...(phone ? [{ href: `tel:${phone}`, icon: Phone, label: phone }] : []),
     ...(linkedinUrl ? [{ href: linkedinUrl, icon: Linkedin, label: "LinkedIn", external: true }] : []),
     ...(githubUrl ? [{ href: githubUrl, icon: Github, label: "GitHub", external: true }] : []),
+    ...(twitterUrl ? [{ href: twitterUrl, icon: Twitter, label: "Twitter/X", external: true }] : []),
+    ...(instagramUrl ? [{ href: instagramUrl, icon: Instagram, label: "Instagram", external: true }] : []),
+    ...(youtubeUrl ? [{ href: youtubeUrl, icon: Youtube, label: "YouTube", external: true }] : []),
+    ...(websiteUrl ? [{ href: websiteUrl, icon: Globe, label: "Website", external: true }] : []),
   ];
 
   return (
