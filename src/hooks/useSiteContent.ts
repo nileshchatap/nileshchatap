@@ -64,7 +64,26 @@ export const useStats = () =>
     },
   });
 
+export const useVisitorCount = () =>
+  useQuery({
+    queryKey: ["site_visitors_count"],
+    queryFn: async () => {
+      const { count } = await (supabase as any)
+        .from("site_visitors")
+        .select("*", { count: "exact", head: true });
+      return count ?? 0;
+    },
+    refetchInterval: 30000, // refresh every 30s
+  });
+
 export const useAbout = () =>
+  useQuery({
+    queryKey: ["site_about"],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from("site_about").select("*").limit(1).single();
+      return data;
+    },
+  });
   useQuery({
     queryKey: ["site_about"],
     queryFn: async () => {
