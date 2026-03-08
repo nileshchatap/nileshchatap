@@ -255,6 +255,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="submissions">Submissions ({submissions.length})</TabsTrigger>
+            <TabsTrigger value="subscribers">Subscribers ({subscribers.length})</TabsTrigger>
           </TabsList>
 
           {/* Hero Tab */}
