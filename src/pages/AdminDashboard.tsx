@@ -66,7 +66,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis, visCount] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -77,6 +77,8 @@ const AdminDashboard = () => {
       supabase.from("site_stats").select("*").order("sort_order"),
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("site_about").select("*").limit(1).single(),
+      (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }).limit(100),
+      (supabase as any).from("site_visitors").select("*", { count: "exact", head: true }),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -88,6 +90,8 @@ const AdminDashboard = () => {
     setStats(st.data || []);
     setSubscribers(subs.data || []);
     setAbout(ab.data);
+    setVisitors(vis.data || []);
+    setVisitorCount(visCount.count ?? 0);
     setLoading(false);
   };
 
