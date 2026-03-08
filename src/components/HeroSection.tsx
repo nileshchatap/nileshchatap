@@ -3,6 +3,7 @@ import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useHero } from "@/hooks/useSiteContent";
+import { supabase } from "@/integrations/supabase/client";
 
 const HeroSection = () => {
   const { data: hero } = useHero();
