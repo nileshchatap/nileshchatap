@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trash2, RefreshCw, Shield, Plus, Save, X, Upload } from "lucide-react";
+import { LogOut, Trash2, RefreshCw, Shield, Plus, Save, X, Upload, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,6 +43,7 @@ const AdminDashboard = () => {
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [resumeUploading, setResumeUploading] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -111,7 +112,7 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
-      photo_url: hero.photo_url,
+      photo_url: hero.photo_url, resume_url: hero.resume_url,
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
@@ -137,6 +138,28 @@ const AdminDashboard = () => {
     setHero({ ...hero, photo_url: "" });
     invalidateAll();
     toast({ title: "Photo removed" });
+  };
+
+  const uploadResume = async (file: File) => {
+    setResumeUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `resume.${ext}`;
+    const { error } = await supabase.storage.from("resumes").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setResumeUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("resumes").getPublicUrl(path);
+    const url = publicUrl + "?t=" + Date.now();
+    await (supabase as any).from("site_hero").update({ resume_url: url }).eq("id", hero.id);
+    setHero({ ...hero, resume_url: url });
+    invalidateAll();
+    toast({ title: "Resume uploaded!" });
+    setResumeUploading(false);
+  };
+
+  const removeResume = async () => {
+    await (supabase as any).from("site_hero").update({ resume_url: "" }).eq("id", hero.id);
+    setHero({ ...hero, resume_url: "" });
+    invalidateAll();
+    toast({ title: "Resume removed" });
   };
 
   const addExperience = async () => {
@@ -241,6 +264,29 @@ const AdminDashboard = () => {
                         {hero.photo_url && (
                           <Button variant="destructive" size="sm" onClick={removeHeroPhoto} className="gap-1 w-fit">
                             <Trash2 className="h-3 w-3" /> Remove Photo
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    {/* Resume Upload */}
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                      <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center">
+                        <FileText className={`h-8 w-8 ${hero.resume_url ? "text-primary" : "text-muted-foreground"}`} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm font-medium text-foreground">Resume / CV</p>
+                        {hero.resume_url && (
+                          <a href={hero.resume_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline">View current resume</a>
+                        )}
+                        <label className="cursor-pointer">
+                          <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadResume(f); }} />
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+                            <Upload className="h-4 w-4" /> {resumeUploading ? "Uploading..." : "Upload Resume"}
+                          </span>
+                        </label>
+                        {hero.resume_url && (
+                          <Button variant="destructive" size="sm" onClick={removeResume} className="gap-1 w-fit">
+                            <Trash2 className="h-3 w-3" /> Remove Resume
                           </Button>
                         )}
                       </div>
