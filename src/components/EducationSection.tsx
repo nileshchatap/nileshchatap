@@ -47,7 +47,7 @@ const EducationSection = () => {
         >
           {education.map((edu) => (
             <motion.div key={edu.id} variants={item}>
-              <Card className="card-hover group border-none shadow-md relative overflow-hidden glass-dark">
+              <Card className="card-hover group border-none shadow-md relative overflow-hidden glass-dark bg-transparent">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent to-primary" />
                 <CardContent className="p-6 pl-8">
                   <h3 className="text-lg font-bold text-hero-foreground group-hover:text-accent transition-colors">{edu.institution}</h3>

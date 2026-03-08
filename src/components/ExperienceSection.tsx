@@ -47,7 +47,7 @@ const ExperienceSection = () => {
         >
           {experiences.map((exp) => (
             <motion.div key={exp.id} variants={item}>
-              <Card className="card-hover group border-none shadow-md overflow-hidden glass-dark">
+              <Card className="card-hover group border-none shadow-md overflow-hidden glass-dark bg-transparent">
                 <div className="h-1 bg-gradient-to-r from-primary to-accent" />
                 <CardContent className="p-6">
                   <h3 className="text-lg font-bold text-hero-foreground group-hover:text-primary transition-colors">{exp.company}</h3>

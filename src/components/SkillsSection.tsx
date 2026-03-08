@@ -45,7 +45,7 @@ const SkillsSection = () => {
                 return (
                   <motion.div key={cert.id} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.4 }}>
                     <Card
-                      className={`border-none shadow-sm hover:shadow-md transition-all hover:translate-x-1 glass-dark ${imageUrl ? "cursor-pointer" : ""}`}
+                      className={`border-none shadow-sm hover:shadow-md transition-all hover:translate-x-1 glass-dark bg-transparent ${imageUrl ? "cursor-pointer" : ""}`}
                       onClick={() => imageUrl && setSelectedImage(imageUrl)}
                     >
                       <CardContent className="p-4 flex items-center gap-3">
