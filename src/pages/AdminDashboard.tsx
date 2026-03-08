@@ -79,6 +79,7 @@ const AdminDashboard = () => {
     setSkills(sk.data || []);
     setCertifications(cert.data || []);
     setProjects(proj.data || []);
+    setStats(st.data || []);
     setLoading(false);
   };
 
