@@ -662,10 +662,27 @@ const AdminDashboard = () => {
           <TabsContent value="visitors">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-primary" />
-                  Website Visitors ({visitorCount} total)
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-primary" />
+                    Website Visitors ({visitorCount} total)
+                  </CardTitle>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="gap-2"
+                    onClick={async () => {
+                      if (!confirm("Are you sure you want to reset all visitor data? This will delete all visitor records and the count will start from 0.")) return;
+                      await (supabase as any).from("site_visitors").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+                      setVisitors([]);
+                      setVisitorCount(0);
+                      queryClient.invalidateQueries({ queryKey: ["site_visitors_count"] });
+                      toast({ title: "Visitors reset!", description: "All visitor data has been cleared. Count starts fresh." });
+                    }}
+                  >
+                    <RefreshCw className="h-4 w-4" /> Reset Visitors
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -703,17 +720,17 @@ const AdminDashboard = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead>#</TableHead>
-                          <TableHead>Visitor ID</TableHead>
+                          <TableHead>Visitor Name</TableHead>
                           <TableHead>Platform</TableHead>
                           <TableHead>Screen</TableHead>
                           <TableHead>Language</TableHead>
                           <TableHead>Browser</TableHead>
                           <TableHead>Date & Time</TableHead>
+                          <TableHead className="w-16">Action</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {visitors.map((v: any, idx: number) => {
-                          // Extract browser name from user agent
                           const ua = v.user_agent || "";
                           let browser = "Unknown";
                           if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
@@ -722,16 +739,30 @@ const AdminDashboard = () => {
                           else if (ua.includes("Edg")) browser = "Edge";
                           else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
 
+                          // Generate a friendly visitor name
+                          const visitorName = `Visitor #${visitorCount - idx}`;
+
                           return (
                             <TableRow key={v.id}>
                               <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
-                              <TableCell className="font-mono text-xs text-primary">{v.visitor_id?.slice(0, 12)}</TableCell>
+                              <TableCell className="font-medium text-foreground">{visitorName}</TableCell>
                               <TableCell className="text-sm">{v.platform || "—"}</TableCell>
                               <TableCell className="text-sm">{v.screen_size || "—"}</TableCell>
                               <TableCell className="text-sm">{v.language || "—"}</TableCell>
                               <TableCell className="text-sm">{browser}</TableCell>
                               <TableCell className="text-sm text-muted-foreground">
                                 {new Date(v.visited_at).toLocaleString()}
+                              </TableCell>
+                              <TableCell>
+                                <Button variant="ghost" size="icon" onClick={async () => {
+                                  await (supabase as any).from("site_visitors").delete().eq("id", v.id);
+                                  setVisitors(prev => prev.filter((x: any) => x.id !== v.id));
+                                  setVisitorCount(prev => prev - 1);
+                                  queryClient.invalidateQueries({ queryKey: ["site_visitors_count"] });
+                                  toast({ title: "Visitor deleted" });
+                                }} className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </TableCell>
                             </TableRow>
                           );
