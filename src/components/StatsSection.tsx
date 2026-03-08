@@ -1,21 +1,54 @@
 import { motion } from "framer-motion";
-import { Award, Users, FolderKanban, Code, BarChart3, Briefcase, GraduationCap, Star } from "lucide-react";
-import { useStats } from "@/hooks/useSiteContent";
+import { Award, Users, FolderKanban, Code, BarChart3, Briefcase, GraduationCap, Star, Eye } from "lucide-react";
+import { useStats, useVisitorCount } from "@/hooks/useSiteContent";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
-  Award, Users, FolderKanban, Code, BarChart3, Briefcase, GraduationCap, Star,
+  Award, Users, FolderKanban, Code, BarChart3, Briefcase, GraduationCap, Star, Eye,
 };
 
 const StatsSection = () => {
   const { data: stats } = useStats();
+  const { data: visitorCount } = useVisitorCount();
+
+  // Track visitor on mount
+  useEffect(() => {
+    const trackVisit = async () => {
+      // Use a simple fingerprint based on session
+      let visitorId = sessionStorage.getItem("visitor_id");
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        sessionStorage.setItem("visitor_id", visitorId);
+        // Only insert once per session
+        await supabase.from("site_visitors").insert({
+          visitor_id: visitorId,
+          page: window.location.pathname,
+        });
+      }
+    };
+    trackVisit();
+  }, []);
 
   if (!stats || stats.length === 0) return null;
+
+  // Add visitor count as an extra stat
+  const allStats = [
+    ...stats,
+    {
+      id: "visitors",
+      icon: "Eye",
+      value: `${visitorCount ?? 0}+`,
+      label: "Visitors",
+      sort_order: 999,
+    },
+  ];
 
   return (
     <section className="py-16 hero-gradient relative overflow-hidden border-t border-b border-white/5">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-          {stats.map((stat, i) => {
+          {allStats.map((stat, i) => {
             const Icon = iconMap[stat.icon] || Award;
             return (
               <motion.div
