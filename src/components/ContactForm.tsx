@@ -119,7 +119,7 @@ const ContactForm = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="border-none shadow-xl overflow-hidden glass-dark">
+            <Card className="border-none shadow-xl overflow-hidden glass-dark bg-transparent">
               <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-center gap-2 mb-2">
