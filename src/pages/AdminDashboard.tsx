@@ -112,7 +112,7 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
-      photo_url: hero.photo_url,
+      photo_url: hero.photo_url, resume_url: hero.resume_url,
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
