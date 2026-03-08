@@ -42,6 +42,7 @@ const AdminDashboard = () => {
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
