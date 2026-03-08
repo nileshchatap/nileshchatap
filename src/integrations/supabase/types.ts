@@ -283,7 +283,10 @@ export type Database = {
       }
       site_visitors: {
         Row: {
+          city: string | null
+          country: string | null
           id: string
+          ip_address: string | null
           language: string | null
           page: string | null
           platform: string | null
@@ -293,7 +296,10 @@ export type Database = {
           visitor_id: string
         }
         Insert: {
+          city?: string | null
+          country?: string | null
           id?: string
+          ip_address?: string | null
           language?: string | null
           page?: string | null
           platform?: string | null
@@ -303,7 +309,10 @@ export type Database = {
           visitor_id: string
         }
         Update: {
+          city?: string | null
+          country?: string | null
           id?: string
+          ip_address?: string | null
           language?: string | null
           page?: string | null
           platform?: string | null

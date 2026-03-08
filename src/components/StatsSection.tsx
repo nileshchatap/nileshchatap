@@ -26,6 +26,22 @@ const StatsSection = () => {
       const language = navigator.language;
       const platform = navigator.platform || "Unknown";
 
+      // Get real location from IP using free API
+      let city = "Unknown";
+      let country = "Unknown";
+      let ipAddress = "";
+      try {
+        const geoRes = await fetch("https://ipapi.co/json/");
+        if (geoRes.ok) {
+          const geo = await geoRes.json();
+          city = geo.city || "Unknown";
+          country = geo.country_name || "Unknown";
+          ipAddress = geo.ip || "";
+        }
+      } catch {
+        // Geolocation fetch failed, continue with defaults
+      }
+
       const { error } = await (supabase as any).from("site_visitors").insert({
         visitor_id: visitorId,
         page: window.location.pathname,
@@ -33,9 +49,11 @@ const StatsSection = () => {
         screen_size: screenSize,
         language: language,
         platform: platform,
+        city: city,
+        country: country,
+        ip_address: ipAddress,
       });
 
-      // Only save to localStorage if insert succeeded
       if (!error) {
         localStorage.setItem("portfolio_visitor_id", visitorId);
       }

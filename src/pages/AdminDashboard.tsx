@@ -720,10 +720,10 @@ const AdminDashboard = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead>#</TableHead>
+                          <TableHead>Location</TableHead>
                           <TableHead>Device / OS</TableHead>
                           <TableHead>Browser</TableHead>
                           <TableHead>Screen</TableHead>
-                          <TableHead>Language</TableHead>
                           <TableHead>Date & Time</TableHead>
                           <TableHead className="w-16">Action</TableHead>
                         </TableRow>
@@ -764,13 +764,16 @@ const AdminDashboard = () => {
                             os = `iOS ${match ? match[1].replace(/_/g, '.') : ""}`;
                           } else if (ua.includes("Linux")) os = "Linux";
 
+                          // Real location
+                          const location = [v.city, v.country].filter(Boolean).join(", ") || "—";
+
                           return (
                             <TableRow key={v.id}>
                               <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
-                              <TableCell className="font-medium text-foreground">{os}</TableCell>
+                              <TableCell className="font-medium text-foreground">{location}</TableCell>
+                              <TableCell className="text-sm">{os}</TableCell>
                               <TableCell className="text-sm">{browser}</TableCell>
                               <TableCell className="text-sm">{v.screen_size || "—"}</TableCell>
-                              <TableCell className="text-sm">{v.language || "—"}</TableCell>
                               <TableCell className="text-sm text-muted-foreground">
                                 {new Date(v.visited_at).toLocaleString()}
                               </TableCell>
