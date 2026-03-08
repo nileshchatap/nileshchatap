@@ -18,8 +18,6 @@ const HeroSection = () => {
   const linkedinUrl = hero?.linkedin_url ?? "";
   const githubUrl = hero?.github_url ?? "";
 
-  const { displayed: typedTagline, done: typingDone } = useTypingEffect(tagline);
-
   const contactLinks = [
     ...(email ? [{ href: `mailto:${email}`, icon: Mail, label: email }] : []),
     ...(phone ? [{ href: `tel:${phone}`, icon: Phone, label: phone }] : []),
