@@ -1,12 +1,15 @@
-import { Zap, Award } from "lucide-react";
+import { Zap, Award, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useSkills, useCertifications } from "@/hooks/useSiteContent";
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const SkillsSection = () => {
   const { data: skills = [] } = useSkills();
   const { data: certifications = [] } = useCertifications();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
     <section id="skills" className="py-24 section-gradient relative overflow-hidden">
@@ -37,20 +40,35 @@ const SkillsSection = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Certifications</h2>
             </div>
             <div className="space-y-3">
-              {certifications.map((cert, i) => (
-                <motion.div key={cert.id} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.4 }}>
-                  <Card className="border-none shadow-sm hover:shadow-md transition-all hover:translate-x-1">
-                    <CardContent className="p-4 flex items-start gap-3">
-                      <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-gradient-to-br from-accent to-primary shrink-0" />
-                      <span className="text-sm text-muted-foreground">{cert.name}</span>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+              {certifications.map((cert, i) => {
+                const imageUrl = (cert as any).image_url;
+                return (
+                  <motion.div key={cert.id} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.4 }}>
+                    <Card
+                      className={`border-none shadow-sm hover:shadow-md transition-all hover:translate-x-1 ${imageUrl ? "cursor-pointer" : ""}`}
+                      onClick={() => imageUrl && setSelectedImage(imageUrl)}
+                    >
+                      <CardContent className="p-4 flex items-center gap-3">
+                        <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-accent to-primary shrink-0" />
+                        <span className="text-sm text-muted-foreground flex-1">{cert.name}</span>
+                        {imageUrl && <ExternalLink className="h-4 w-4 text-primary shrink-0" />}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         </div>
       </div>
+
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-3xl p-2">
+          {selectedImage && (
+            <img src={selectedImage} alt="Certificate" className="w-full h-auto rounded-lg" />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
