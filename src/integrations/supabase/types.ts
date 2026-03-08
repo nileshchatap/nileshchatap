@@ -200,6 +200,30 @@ export type Database = {
         }
         Relationships: []
       }
+      site_stats: {
+        Row: {
+          icon: string
+          id: string
+          label: string
+          sort_order: number
+          value: string
+        }
+        Insert: {
+          icon?: string
+          id?: string
+          label: string
+          sort_order?: number
+          value?: string
+        }
+        Update: {
+          icon?: string
+          id?: string
+          label?: string
+          sort_order?: number
+          value?: string
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           created_at: string

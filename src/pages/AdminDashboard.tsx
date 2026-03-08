@@ -36,12 +36,14 @@ const AdminDashboard = () => {
   const [skills, setSkills] = useState<any[]>([]);
   const [certifications, setCertifications] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
+  const [stats, setStats] = useState<any[]>([]);
 
   const [newExp, setNewExp] = useState({ company: "", role: "", period: "", location: "" });
   const [newEdu, setNewEdu] = useState({ institution: "", degree: "", period: "" });
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
+  const [newStat, setNewStat] = useState({ icon: "Award", value: "", label: "" });
   const [photoUploading, setPhotoUploading] = useState(false);
   const [resumeUploading, setResumeUploading] = useState(false);
 
@@ -60,7 +62,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -68,6 +70,7 @@ const AdminDashboard = () => {
       supabase.from("site_skills").select("*").order("sort_order"),
       supabase.from("site_certifications").select("*").order("sort_order"),
       supabase.from("site_projects").select("*").order("sort_order"),
+      supabase.from("site_stats").select("*").order("sort_order"),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -76,11 +79,12 @@ const AdminDashboard = () => {
     setSkills(sk.data || []);
     setCertifications(cert.data || []);
     setProjects(proj.data || []);
+    setStats(st.data || []);
     setLoading(false);
   };
 
   const invalidateAll = () => {
-    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects"].forEach(
+    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects", "site_stats"].forEach(
       key => queryClient.invalidateQueries({ queryKey: [key] })
     );
   };
@@ -206,6 +210,12 @@ const AdminDashboard = () => {
     setNewProject({ title: "", bullets: "", project_url: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
+  const addStat = async () => {
+    if (!newStat.value.trim() || !newStat.label.trim()) return;
+    await (supabase as any).from("site_stats").insert({ icon: newStat.icon, value: newStat.value.trim(), label: newStat.label.trim(), sort_order: stats.length });
+    setNewStat({ icon: "Award", value: "", label: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
+  };
+
   const deleteItem = async (table: string, id: string) => {
     await (supabase as any).from(table).delete().eq("id", id);
     loadAll(); invalidateAll();
@@ -237,6 +247,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="skills">Skills</TabsTrigger>
             <TabsTrigger value="certifications">Certifications</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
+            <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="submissions">Submissions ({submissions.length})</TabsTrigger>
           </TabsList>
 
@@ -474,6 +485,47 @@ const AdminDashboard = () => {
                   <Input placeholder="Project URL (GitHub, demo, etc.)" value={newProject.project_url} onChange={e => setNewProject({ ...newProject, project_url: e.target.value })} />
                   <Textarea placeholder="Bullet points (one per line)" value={newProject.bullets} onChange={e => setNewProject({ ...newProject, bullets: e.target.value })} rows={4} />
                   <Button onClick={addProject} className="gap-2"><Plus className="h-4 w-4" /> Add Project</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Stats Tab */}
+          <TabsContent value="stats">
+            <Card>
+              <CardHeader><CardTitle>Stats Counters (drag to reorder)</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_stats", stats, setStats, e)}>
+                  <SortableContext items={stats.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {stats.map(s => (
+                      <SortableItem key={s.id} id={s.id}>
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div>
+                            <p className="font-semibold text-foreground">{s.value} — {s.label}</p>
+                            <p className="text-xs text-muted-foreground">Icon: {s.icon}</p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => deleteItem("site_stats", s.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
+                <div className="border-t border-border pt-4 space-y-3">
+                  <p className="text-sm font-medium text-foreground">Add New Stat</p>
+                  <div className="grid md:grid-cols-3 gap-3">
+                    <select
+                      value={newStat.icon}
+                      onChange={e => setNewStat({ ...newStat, icon: e.target.value })}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                    >
+                      {["Award", "Users", "FolderKanban", "Code", "BarChart3", "Briefcase", "GraduationCap", "Star"].map(ic => (
+                        <option key={ic} value={ic}>{ic}</option>
+                      ))}
+                    </select>
+                    <Input placeholder="Value (e.g. 10+)" value={newStat.value} onChange={e => setNewStat({ ...newStat, value: e.target.value })} />
+                    <Input placeholder="Label (e.g. Projects)" value={newStat.label} onChange={e => setNewStat({ ...newStat, label: e.target.value })} />
+                  </div>
+                  <Button onClick={addStat} className="gap-2"><Plus className="h-4 w-4" /> Add Stat</Button>
                 </div>
               </CardContent>
             </Card>
