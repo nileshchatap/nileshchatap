@@ -23,7 +23,7 @@ const AboutSection = () => {
             <Sparkles className="h-5 w-5 text-accent" />
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          <h2 className="text-3xl md:text-4xl font-bold text-hero-foreground mb-8" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             Who I <span className="text-gradient-purple">Am</span>
           </h2>
 
