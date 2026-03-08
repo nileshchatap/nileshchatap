@@ -8,6 +8,8 @@ import SkillsSection from "@/components/SkillsSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import ContactForm from "@/components/ContactForm";
 import NewsletterSection from "@/components/NewsletterSection";
+import GitHubStatsSection from "@/components/GitHubStatsSection";
+import UpcomingFeaturesSection from "@/components/UpcomingFeaturesSection";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import ParticleField from "@/components/ParticleField";
@@ -40,6 +42,8 @@ const Index = () => {
       <EducationSection />
       <SkillsSection />
       <ProjectsSection />
+      <GitHubStatsSection />
+      <UpcomingFeaturesSection />
       <ContactForm />
       <NewsletterSection />
       <Footer />
