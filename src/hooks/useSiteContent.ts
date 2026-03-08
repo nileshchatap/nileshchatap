@@ -84,6 +84,3 @@ export const useAbout = () =>
       return data;
     },
   });
-      return data;
-    },
-  });
