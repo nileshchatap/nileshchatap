@@ -3,33 +3,6 @@ import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useHero } from "@/hooks/useSiteContent";
-import { useState, useEffect } from "react";
-
-const useTypingEffect = (text: string, speed = 40, startDelay = 800) => {
-  const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    if (!text) return;
-    setDisplayed("");
-    setDone(false);
-    let i = 0;
-    const timeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) {
-          clearInterval(interval);
-          setDone(true);
-        }
-      }, speed);
-      return () => clearInterval(interval);
-    }, startDelay);
-    return () => clearTimeout(timeout);
-  }, [text, speed, startDelay]);
-
-  return { displayed, done };
-};
 
 const HeroSection = () => {
   const { data: hero } = useHero();
@@ -44,8 +17,6 @@ const HeroSection = () => {
   const phone = hero?.phone ?? "";
   const linkedinUrl = hero?.linkedin_url ?? "";
   const githubUrl = hero?.github_url ?? "";
-
-  const { displayed: typedTagline, done: typingDone } = useTypingEffect(tagline);
 
   const contactLinks = [
     ...(email ? [{ href: `mailto:${email}`, icon: Mail, label: email }] : []),
@@ -81,8 +52,7 @@ const HeroSection = () => {
           </motion.div>
 
           <motion.p className="text-base md:text-lg text-hero-muted mb-6 leading-relaxed max-w-2xl mx-auto font-mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.3 }}>
-            {typedTagline}
-            {!typingDone && <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-pulse align-middle" />}
+            {tagline}
           </motion.p>
 
           {location && (
