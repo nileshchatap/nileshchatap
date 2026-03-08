@@ -51,6 +51,10 @@ const ContactForm = () => {
     ...(email ? [{ icon: Mail, label: "Email", value: email, href: `mailto:${email}` }] : []),
     ...(linkedinUrl ? [{ icon: Linkedin, label: "LinkedIn", value: "Connect on LinkedIn", href: linkedinUrl, external: true }] : []),
     ...(githubUrl ? [{ icon: Github, label: "GitHub", value: githubUrl.replace("https://github.com/", ""), href: githubUrl, external: true }] : []),
+    ...(twitterUrl ? [{ icon: Twitter, label: "Twitter/X", value: "Follow on X", href: twitterUrl, external: true }] : []),
+    ...(instagramUrl ? [{ icon: Instagram, label: "Instagram", value: "Follow on Instagram", href: instagramUrl, external: true }] : []),
+    ...(youtubeUrl ? [{ icon: Youtube, label: "YouTube", value: "Subscribe on YouTube", href: youtubeUrl, external: true }] : []),
+    ...(websiteUrl ? [{ icon: Globe, label: "Website", value: "Visit Website", href: websiteUrl, external: true }] : []),
   ];
 
   return (
