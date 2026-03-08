@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, GitFork, Star, Code2, Users, BookOpen, Activity } from "lucide-react";
+import { Github, GitFork, Star, Code2, Users, BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useHero } from "@/hooks/useSiteContent";
 import { Skeleton } from "@/components/ui/skeleton";
