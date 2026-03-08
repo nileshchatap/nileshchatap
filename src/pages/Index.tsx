@@ -32,6 +32,7 @@ const Index = () => {
       <ParticleField />
       <Navbar />
       <HeroSection />
+      <StatsSection />
       <ExperienceSection />
       <EducationSection />
       <SkillsSection />
