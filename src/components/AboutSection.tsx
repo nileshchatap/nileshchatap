@@ -39,7 +39,7 @@ const AboutSection = () => {
                 <User className="h-7 w-7 text-primary" />
               </div>
             </div>
-            <p className="text-muted-foreground leading-relaxed text-base md:text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-hero-muted leading-relaxed text-base md:text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>
               {about.content}
             </p>
           </motion.div>
