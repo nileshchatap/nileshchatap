@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trash2, RefreshCw, Shield, Plus, Save, X, Upload, FileText } from "lucide-react";
+import { LogOut, Trash2, RefreshCw, Shield, Plus, Save, X, Upload, FileText, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,6 +39,8 @@ const AdminDashboard = () => {
   const [certifications, setCertifications] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [stats, setStats] = useState<any[]>([]);
+  const [visitors, setVisitors] = useState<any[]>([]);
+  const [visitorCount, setVisitorCount] = useState(0);
 
   const [newExp, setNewExp] = useState({ company: "", role: "", period: "", location: "" });
   const [newEdu, setNewEdu] = useState({ institution: "", degree: "", period: "" });
@@ -64,7 +66,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis, visCount] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -75,6 +77,8 @@ const AdminDashboard = () => {
       supabase.from("site_stats").select("*").order("sort_order"),
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("site_about").select("*").limit(1).single(),
+      (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }).limit(100),
+      (supabase as any).from("site_visitors").select("*", { count: "exact", head: true }),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -86,6 +90,8 @@ const AdminDashboard = () => {
     setStats(st.data || []);
     setSubscribers(subs.data || []);
     setAbout(ab.data);
+    setVisitors(vis.data || []);
+    setVisitorCount(visCount.count ?? 0);
     setLoading(false);
   };
 
@@ -267,6 +273,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="submissions">Submissions ({submissions.length})</TabsTrigger>
             <TabsTrigger value="subscribers">Subscribers ({subscribers.length})</TabsTrigger>
+            <TabsTrigger value="visitors">Visitors ({visitorCount})</TabsTrigger>
           </TabsList>
 
           {/* Hero Tab */}
@@ -641,6 +648,72 @@ const AdminDashboard = () => {
                               }} className="text-destructive hover:text-destructive">
                                 <Trash2 className="h-4 w-4" />
                               </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          {/* Visitors Tab */}
+          <TabsContent value="visitors">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-primary" />
+                  Website Visitors ({visitorCount} total)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="p-4 rounded-lg border border-border bg-secondary/50 text-center">
+                    <p className="text-3xl font-bold text-primary">{visitorCount}</p>
+                    <p className="text-sm text-muted-foreground">Total Visitors</p>
+                  </div>
+                  <div className="p-4 rounded-lg border border-border bg-secondary/50 text-center">
+                    <p className="text-3xl font-bold text-primary">
+                      {visitors.filter(v => {
+                        const visitDate = new Date(v.visited_at);
+                        const today = new Date();
+                        return visitDate.toDateString() === today.toDateString();
+                      }).length}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Today</p>
+                  </div>
+                  <div className="p-4 rounded-lg border border-border bg-secondary/50 text-center">
+                    <p className="text-3xl font-bold text-primary">
+                      {visitors.filter(v => {
+                        const visitDate = new Date(v.visited_at);
+                        const weekAgo = new Date();
+                        weekAgo.setDate(weekAgo.getDate() - 7);
+                        return visitDate >= weekAgo;
+                      }).length}
+                    </p>
+                    <p className="text-sm text-muted-foreground">This Week</p>
+                  </div>
+                </div>
+                {visitors.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No visitors recorded yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Visitor ID</TableHead>
+                          <TableHead>Page</TableHead>
+                          <TableHead>Date & Time</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {visitors.map((v: any) => (
+                          <TableRow key={v.id}>
+                            <TableCell className="font-mono text-xs">{v.visitor_id?.slice(0, 8)}...</TableCell>
+                            <TableCell>{v.page || "/"}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {new Date(v.visited_at).toLocaleString()}
                             </TableCell>
                           </TableRow>
                         ))}
