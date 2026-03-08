@@ -68,12 +68,10 @@ export const useVisitorCount = () =>
   useQuery({
     queryKey: ["site_visitors_count"],
     queryFn: async () => {
-      const { count } = await (supabase as any)
-        .from("site_visitors")
-        .select("*", { count: "exact", head: true });
-      return count ?? 0;
+      const { data } = await supabase.rpc("unique_visitor_count" as any);
+      return (data as number) ?? 0;
     },
-    refetchInterval: 30000, // refresh every 30s
+    refetchInterval: 30000,
   });
 
 export const useAbout = () =>
