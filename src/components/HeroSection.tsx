@@ -1,5 +1,5 @@
 import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown } from "lucide-react";
-import adminPhoto from "@/assets/admin-photo.jpg";
+import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useHero } from "@/hooks/useSiteContent";
@@ -10,6 +10,7 @@ const HeroSection = () => {
   const fullName = hero?.full_name ?? "Nilesh Chatap";
   const [firstName, ...rest] = fullName.split(" ");
   const lastName = rest.join(" ");
+  const photoUrl = (hero as any)?.photo_url || "";
   const tagline = hero?.tagline ?? "";
   const location = hero?.location ?? "";
   const email = hero?.email ?? "";
@@ -35,7 +36,7 @@ const HeroSection = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
-            <img src={adminPhoto} alt={fullName} className="w-36 h-36 rounded-full object-cover mx-auto mb-6 border-4 border-primary/30 shadow-2xl glow-primary" />
+            <img src={photoUrl || defaultPhoto} alt={fullName} className="w-36 h-36 rounded-full object-cover mx-auto mb-6 border-4 border-primary/30 shadow-2xl glow-primary" />
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}>
@@ -73,7 +74,7 @@ const HeroSection = () => {
             <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl glow-primary hover:scale-105 transition-transform bg-gradient-to-r from-primary to-primary/80" asChild>
               <a href="#skills"><Eye className="h-5 w-5" /> View My Skills</a>
             </Button>
-            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-primary/40 text-hero-foreground hover:bg-primary/10" asChild>
+            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-white/40 bg-white/10 text-white hover:bg-white/20" asChild>
               <a href="#contact"><Mail className="h-5 w-5" /> Get In Touch</a>
             </Button>
           </motion.div>

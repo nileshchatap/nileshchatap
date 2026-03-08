@@ -42,6 +42,7 @@ const AdminDashboard = () => {
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -110,9 +111,32 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
-    }).eq("id", hero.id);
+      photo_url: hero.photo_url,
+    } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
+  };
+
+  const uploadHeroPhoto = async (file: File) => {
+    setPhotoUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `hero-photo.${ext}`;
+    const { error } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setPhotoUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
+    const url = publicUrl + "?t=" + Date.now();
+    await (supabase as any).from("site_hero").update({ photo_url: url }).eq("id", hero.id);
+    setHero({ ...hero, photo_url: url });
+    invalidateAll();
+    toast({ title: "Photo uploaded!" });
+    setPhotoUploading(false);
+  };
+
+  const removeHeroPhoto = async () => {
+    await (supabase as any).from("site_hero").update({ photo_url: "" }).eq("id", hero.id);
+    setHero({ ...hero, photo_url: "" });
+    invalidateAll();
+    toast({ title: "Photo removed" });
   };
 
   const addExperience = async () => {
@@ -200,6 +224,27 @@ const AdminDashboard = () => {
               <CardContent className="space-y-4">
                 {hero && (
                   <>
+                    {/* Photo Upload */}
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                      {hero.photo_url ? (
+                        <img src={hero.photo_url} alt="Profile" className="w-20 h-20 rounded-full object-cover border-2 border-primary" />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-muted-foreground text-xs">No photo</div>
+                      )}
+                      <div className="flex flex-col gap-2">
+                        <label className="cursor-pointer">
+                          <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadHeroPhoto(f); }} />
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+                            <Upload className="h-4 w-4" /> {photoUploading ? "Uploading..." : "Upload Photo"}
+                          </span>
+                        </label>
+                        {hero.photo_url && (
+                          <Button variant="destructive" size="sm" onClick={removeHeroPhoto} className="gap-1 w-fit">
+                            <Trash2 className="h-3 w-3" /> Remove Photo
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                     <div className="grid md:grid-cols-2 gap-4">
                       {[
                         { label: "Full Name", key: "full_name" },
