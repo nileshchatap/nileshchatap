@@ -55,7 +55,7 @@ const ProjectsSection = () => {
             const url = (project as any).project_url;
             return (
               <motion.div key={project.id} variants={item} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Card className="group border-none shadow-md overflow-hidden h-full flex flex-col glass-dark transition-shadow hover:shadow-2xl hover:shadow-primary/20">
+                <Card className="group border-none shadow-md overflow-hidden h-full flex flex-col glass-dark bg-transparent transition-shadow hover:shadow-2xl hover:shadow-primary/20">
                   <div className="h-1 bg-gradient-to-r from-primary to-accent" />
                   <CardContent className="p-6 flex flex-col flex-1">
                     <h3 className="text-lg font-bold text-hero-foreground group-hover:text-primary transition-colors">
