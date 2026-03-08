@@ -715,6 +715,68 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
+                {/* Frequent Visitor Alerts - visitors with 4+ visits */}
+                {(() => {
+                  const visitsByVisitor: Record<string, any[]> = {};
+                  visitors.forEach(v => {
+                    const vid = v.visitor_id;
+                    if (!visitsByVisitor[vid]) visitsByVisitor[vid] = [];
+                    visitsByVisitor[vid].push(v);
+                  });
+                  const frequentVisitors = Object.entries(visitsByVisitor)
+                    .filter(([, visits]) => visits.length >= 4)
+                    .sort((a, b) => b[1].length - a[1].length);
+
+                  if (frequentVisitors.length === 0) return null;
+
+                  return (
+                    <div className="mb-6 space-y-3">
+                      <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4 text-amber-500" />
+                        Frequent Visitors ({frequentVisitors.length})
+                      </h3>
+                      {frequentVisitors.map(([visitorId, visits]) => {
+                        const latest = visits[0]; // already sorted by visited_at desc
+                        const ua = latest.user_agent || "";
+                        let browser = "Unknown";
+                        if (ua.includes("Edg/")) browser = "Edge";
+                        else if (ua.includes("Chrome/")) browser = "Chrome";
+                        else if (ua.includes("Firefox/")) browser = "Firefox";
+                        else if (ua.includes("Safari/") && !ua.includes("Chrome")) browser = "Safari";
+                        let os = "Unknown";
+                        if (ua.includes("Windows")) os = "Windows";
+                        else if (ua.includes("Mac OS X")) os = "macOS";
+                        else if (ua.includes("Android")) os = "Android";
+                        else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+                        else if (ua.includes("Linux")) os = "Linux";
+                        const location = [latest.city, latest.country].filter(Boolean).join(", ") || "Unknown";
+                        const isMobile = ua.toLowerCase().includes("mobile") || ua.toLowerCase().includes("iphone") || ua.toLowerCase().includes("android");
+
+                        return (
+                          <Alert key={visitorId} className="border-amber-500/30 bg-amber-500/5">
+                            <AlertTriangle className="h-4 w-4 text-amber-500" />
+                            <AlertTitle className="text-foreground flex items-center gap-2">
+                              {visits.length} visits from {location}
+                            </AlertTitle>
+                            <AlertDescription className="text-muted-foreground mt-1">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs mt-2">
+                                <div><span className="font-medium text-foreground">IP:</span> {latest.ip_address || "—"}</div>
+                                <div><span className="font-medium text-foreground">Browser:</span> {browser}</div>
+                                <div><span className="font-medium text-foreground">OS:</span> {os}</div>
+                                <div><span className="font-medium text-foreground">Device:</span> {isMobile ? "Mobile" : "Desktop"}</div>
+                                <div><span className="font-medium text-foreground">Screen:</span> {latest.screen_size || "—"}</div>
+                                <div><span className="font-medium text-foreground">Language:</span> {latest.language || "—"}</div>
+                                <div><span className="font-medium text-foreground">First visit:</span> {new Date(visits[visits.length - 1].visited_at).toLocaleDateString()}</div>
+                                <div><span className="font-medium text-foreground">Last visit:</span> {new Date(visits[0].visited_at).toLocaleDateString()}</div>
+                              </div>
+                            </AlertDescription>
+                          </Alert>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+
                 {/* Analytics Charts */}
                 {visitors.length > 0 && (() => {
                   const CHART_COLORS = ["hsl(var(--primary))", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"];
