@@ -5,6 +5,32 @@ import { motion } from "framer-motion";
 import { useHero } from "@/hooks/useSiteContent";
 import { useState, useEffect } from "react";
 
+const useTypingEffect = (text: string, speed = 40, startDelay = 800) => {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!text) return;
+    setDisplayed("");
+    setDone(false);
+    let i = 0;
+    const timeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(interval);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(interval);
+    }, startDelay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, startDelay]);
+
+  return { displayed, done };
+};
+
 const HeroSection = () => {
   const { data: hero } = useHero();
 
@@ -18,6 +44,8 @@ const HeroSection = () => {
   const phone = hero?.phone ?? "";
   const linkedinUrl = hero?.linkedin_url ?? "";
   const githubUrl = hero?.github_url ?? "";
+
+  const { displayed: typedTagline, done: typingDone } = useTypingEffect(tagline);
 
   const contactLinks = [
     ...(email ? [{ href: `mailto:${email}`, icon: Mail, label: email }] : []),
