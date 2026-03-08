@@ -32,6 +32,7 @@ const AdminDashboard = () => {
   const queryClient = useQueryClient();
 
   const [hero, setHero] = useState<any>(null);
+  const [about, setAbout] = useState<any>(null);
   const [experiences, setExperiences] = useState<any[]>([]);
   const [education, setEducation] = useState<any[]>([]);
   const [skills, setSkills] = useState<any[]>([]);
