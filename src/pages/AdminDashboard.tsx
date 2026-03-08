@@ -713,6 +713,106 @@ const AdminDashboard = () => {
                     <p className="text-sm text-muted-foreground">This Week</p>
                   </div>
                 </div>
+
+                {/* Analytics Charts */}
+                {visitors.length > 0 && (() => {
+                  const CHART_COLORS = ["hsl(var(--primary))", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"];
+
+                  // Visitors per day (last 14 days)
+                  const dailyData = (() => {
+                    const days: Record<string, number> = {};
+                    for (let i = 13; i >= 0; i--) {
+                      const d = new Date();
+                      d.setDate(d.getDate() - i);
+                      days[d.toISOString().slice(0, 10)] = 0;
+                    }
+                    visitors.forEach(v => {
+                      const day = new Date(v.visited_at).toISOString().slice(0, 10);
+                      if (days[day] !== undefined) days[day]++;
+                    });
+                    return Object.entries(days).map(([date, count]) => ({
+                      date: new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+                      visitors: count,
+                    }));
+                  })();
+
+                  // Country breakdown
+                  const countryData = (() => {
+                    const counts: Record<string, number> = {};
+                    visitors.forEach(v => {
+                      const c = v.country || "Unknown";
+                      counts[c] = (counts[c] || 0) + 1;
+                    });
+                    return Object.entries(counts)
+                      .sort((a, b) => b[1] - a[1])
+                      .slice(0, 8)
+                      .map(([name, value]) => ({ name, value }));
+                  })();
+
+                  // Browser breakdown
+                  const browserData = (() => {
+                    const counts: Record<string, number> = {};
+                    visitors.forEach(v => {
+                      const ua = v.user_agent || "";
+                      let browser = "Other";
+                      if (ua.includes("Edg/")) browser = "Edge";
+                      else if (ua.includes("OPR/") || ua.includes("Opera")) browser = "Opera";
+                      else if (ua.includes("Chrome/")) browser = "Chrome";
+                      else if (ua.includes("Firefox/")) browser = "Firefox";
+                      else if (ua.includes("Safari/") && !ua.includes("Chrome")) browser = "Safari";
+                      counts[browser] = (counts[browser] || 0) + 1;
+                    });
+                    return Object.entries(counts)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([name, value]) => ({ name, value }));
+                  })();
+
+                  return (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      {/* Visitors Per Day Chart */}
+                      <div className="p-4 rounded-lg border border-border">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Visitors Per Day (Last 14 Days)</h3>
+                        <ResponsiveContainer width="100%" height={220}>
+                          <BarChart data={dailyData}>
+                            <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                            <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                            <Tooltip />
+                            <Bar dataKey="visitors" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Country Breakdown */}
+                      <div className="p-4 rounded-lg border border-border">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Visitors by Country</h3>
+                        <ResponsiveContainer width="100%" height={220}>
+                          <PieChart>
+                            <Pie data={countryData} cx="50%" cy="50%" outerRadius={80} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                              {countryData.map((_, i) => (
+                                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Browser Breakdown */}
+                      <div className="p-4 rounded-lg border border-border lg:col-span-2">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Browser Usage</h3>
+                        <ResponsiveContainer width="100%" height={180}>
+                          <BarChart data={browserData} layout="vertical">
+                            <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                            <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={70} />
+                            <Tooltip />
+                            <Bar dataKey="value" fill="#10b981" radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {visitors.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No visitors recorded yet.</p>
                 ) : (
