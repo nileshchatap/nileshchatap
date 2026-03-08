@@ -258,6 +258,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="hero" className="space-y-6">
           <TabsList className="flex flex-wrap gap-1">
             <TabsTrigger value="hero">Hero</TabsTrigger>
+            <TabsTrigger value="about">About Me</TabsTrigger>
             <TabsTrigger value="experience">Experience</TabsTrigger>
             <TabsTrigger value="education">Education</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>
