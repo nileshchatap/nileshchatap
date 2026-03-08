@@ -34,6 +34,7 @@ const Index = () => {
       <ParticleField />
       <Navbar />
       <HeroSection />
+      <AboutSection />
       <StatsSection />
       <ExperienceSection />
       <EducationSection />
