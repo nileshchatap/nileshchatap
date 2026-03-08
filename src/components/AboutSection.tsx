@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Sparkles } from "lucide-react";
+import { User } from "lucide-react";
 import { useAbout } from "@/hooks/useSiteContent";
 
 const AboutSection = () => {
