@@ -116,39 +116,51 @@ export type Database = {
           full_name: string
           github_url: string | null
           id: string
+          instagram_url: string | null
           linkedin_url: string | null
           location: string
           phone: string | null
           photo_url: string | null
           resume_url: string | null
           tagline: string
+          twitter_url: string | null
           updated_at: string
+          website_url: string | null
+          youtube_url: string | null
         }
         Insert: {
           email?: string
           full_name?: string
           github_url?: string | null
           id?: string
+          instagram_url?: string | null
           linkedin_url?: string | null
           location?: string
           phone?: string | null
           photo_url?: string | null
           resume_url?: string | null
           tagline?: string
+          twitter_url?: string | null
           updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
         }
         Update: {
           email?: string
           full_name?: string
           github_url?: string | null
           id?: string
+          instagram_url?: string | null
           linkedin_url?: string | null
           location?: string
           phone?: string | null
           photo_url?: string | null
           resume_url?: string | null
           tagline?: string
+          twitter_url?: string | null
           updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
         }
         Relationships: []
       }
