@@ -84,7 +84,7 @@ const AdminDashboard = () => {
   };
 
   const invalidateAll = () => {
-    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects"].forEach(
+    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects", "site_stats"].forEach(
       key => queryClient.invalidateQueries({ queryKey: [key] })
     );
   };
