@@ -3,25 +3,50 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useExperiences } from "@/hooks/useSiteContent";
 
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.15 } },
+};
+const item = {
+  hidden: { opacity: 0, x: -40, scale: 0.95 },
+  show: { opacity: 1, x: 0, scale: 1, transition: { type: "spring" as const, stiffness: 100, damping: 15 } },
+};
+
 const ExperienceSection = () => {
   const { data: experiences = [] } = useExperiences();
 
   return (
     <section id="experience" className="py-24 hero-gradient relative overflow-hidden">
-      <div className="absolute top-10 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-10 right-20 w-60 h-60 bg-accent/8 rounded-full blur-3xl" />
+      <div className="absolute top-10 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl floating" />
+      <div className="absolute bottom-10 right-20 w-60 h-60 bg-accent/8 rounded-full blur-3xl floating" style={{ animationDelay: "2s" }} />
 
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div className="flex items-center gap-3 mb-12" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-          <div className="p-2.5 rounded-xl bg-primary/20">
+        <motion.div
+          className="flex items-center gap-3 mb-12"
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ type: "spring", stiffness: 80 }}
+        >
+          <motion.div
+            className="p-2.5 rounded-xl bg-primary/20"
+            whileHover={{ rotate: 360, scale: 1.2 }}
+            transition={{ duration: 0.5 }}
+          >
             <Briefcase className="h-6 w-6 text-primary" />
-          </div>
+          </motion.div>
           <h2 className="text-3xl md:text-4xl font-bold text-hero-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Experience</h2>
         </motion.div>
 
-        <div className="grid gap-6 max-w-3xl">
-          {experiences.map((exp, i) => (
-            <motion.div key={exp.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}>
+        <motion.div
+          className="grid gap-6 max-w-3xl"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
+          {experiences.map((exp) => (
+            <motion.div key={exp.id} variants={item}>
               <Card className="card-hover group border-none shadow-md overflow-hidden glass-dark">
                 <div className="h-1 bg-gradient-to-r from-primary to-accent" />
                 <CardContent className="p-6">
@@ -35,7 +60,7 @@ const ExperienceSection = () => {
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
