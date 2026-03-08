@@ -1,0 +1,1 @@
+CREATE POLICY "Authenticated users can delete visits" ON public.site_visitors FOR DELETE TO authenticated USING (true);
