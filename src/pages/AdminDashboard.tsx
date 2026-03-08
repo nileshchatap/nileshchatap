@@ -316,7 +316,10 @@ const AdminDashboard = () => {
                         { label: "Twitter/X URL", key: "twitter_url" },
                         { label: "Instagram URL", key: "instagram_url" },
                         { label: "YouTube URL", key: "youtube_url" },
+                        { label: "Kaggle URL", key: "kaggle_url" },
                         { label: "Website URL", key: "website_url" },
+                        { label: "Other URL", key: "other_url" },
+                        { label: "Other URL Label", key: "other_url_label" },
                       ].map(f => (
                         <div key={f.key}>
                           <label className="text-sm font-medium text-foreground">{f.label}</label>

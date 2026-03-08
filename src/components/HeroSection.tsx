@@ -23,6 +23,9 @@ const HeroSection = () => {
   const instagramUrl = (hero as any)?.instagram_url ?? "";
   const youtubeUrl = (hero as any)?.youtube_url ?? "";
   const websiteUrl = (hero as any)?.website_url ?? "";
+  const kaggleUrl = (hero as any)?.kaggle_url ?? "";
+  const otherUrl = (hero as any)?.other_url ?? "";
+  const otherUrlLabel = (hero as any)?.other_url_label ?? "Other";
 
   const contactLinks = [
     ...(email ? [{ href: `mailto:${email}`, icon: Mail, label: email }] : []),
@@ -32,7 +35,9 @@ const HeroSection = () => {
     ...(twitterUrl ? [{ href: twitterUrl, icon: Twitter, label: "Twitter/X", external: true }] : []),
     ...(instagramUrl ? [{ href: instagramUrl, icon: Instagram, label: "Instagram", external: true }] : []),
     ...(youtubeUrl ? [{ href: youtubeUrl, icon: Youtube, label: "YouTube", external: true }] : []),
+    ...(kaggleUrl ? [{ href: kaggleUrl, icon: Globe, label: "Kaggle", external: true }] : []),
     ...(websiteUrl ? [{ href: websiteUrl, icon: Globe, label: "Website", external: true }] : []),
+    ...(otherUrl ? [{ href: otherUrl, icon: Globe, label: otherUrlLabel, external: true }] : []),
   ];
 
   return (
