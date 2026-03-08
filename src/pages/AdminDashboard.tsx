@@ -43,6 +43,7 @@ const AdminDashboard = () => {
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
+  const [newStat, setNewStat] = useState({ icon: "Award", value: "", label: "" });
   const [photoUploading, setPhotoUploading] = useState(false);
   const [resumeUploading, setResumeUploading] = useState(false);
 
