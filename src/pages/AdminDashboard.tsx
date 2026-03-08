@@ -210,6 +210,12 @@ const AdminDashboard = () => {
     setNewProject({ title: "", bullets: "", project_url: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
+  const addStat = async () => {
+    if (!newStat.value.trim() || !newStat.label.trim()) return;
+    await (supabase as any).from("site_stats").insert({ icon: newStat.icon, value: newStat.value.trim(), label: newStat.label.trim(), sort_order: stats.length });
+    setNewStat({ icon: "Award", value: "", label: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
+  };
+
   const deleteItem = async (table: string, id: string) => {
     await (supabase as any).from(table).delete().eq("id", id);
     loadAll(); invalidateAll();
