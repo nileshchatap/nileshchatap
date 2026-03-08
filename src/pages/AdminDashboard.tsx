@@ -92,7 +92,7 @@ const AdminDashboard = () => {
     setItems(reordered);
     
     await Promise.all(reordered.map((item, idx) =>
-      (supabase.from(tableName) as any).update({ sort_order: idx }).eq("id", item.id)
+      (supabase as any).from(tableName).update({ sort_order: idx }).eq("id", item.id)
     ));
     invalidateAll();
   }, []);
