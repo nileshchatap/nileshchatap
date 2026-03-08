@@ -18,9 +18,7 @@ const AboutSection = () => {
           className="max-w-3xl mx-auto text-center"
         >
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-accent" />
             <span className="text-sm font-medium text-accent tracking-wider uppercase">About Me</span>
-            <Sparkles className="h-5 w-5 text-accent" />
           </div>
 
           <h2 className="text-3xl md:text-4xl font-bold text-hero-foreground mb-8" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
