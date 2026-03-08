@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,10 +6,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trash2, RefreshCw, Shield, Plus, Save, X } from "lucide-react";
+import { LogOut, Trash2, RefreshCw, Shield, Plus, Save, X, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import SortableItem from "@/components/admin/SortableItem";
 
 interface Submission {
   id: string;
@@ -27,22 +30,20 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Hero state
   const [hero, setHero] = useState<any>(null);
-
-  // List states
   const [experiences, setExperiences] = useState<any[]>([]);
   const [education, setEducation] = useState<any[]>([]);
   const [skills, setSkills] = useState<any[]>([]);
   const [certifications, setCertifications] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
 
-  // New item forms
   const [newExp, setNewExp] = useState({ company: "", role: "", period: "", location: "" });
   const [newEdu, setNewEdu] = useState({ institution: "", degree: "", period: "" });
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
-  const [newProject, setNewProject] = useState({ title: "", bullets: "" });
+  const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -77,101 +78,89 @@ const AdminDashboard = () => {
   };
 
   const invalidateAll = () => {
-    queryClient.invalidateQueries({ queryKey: ["site_hero"] });
-    queryClient.invalidateQueries({ queryKey: ["site_experiences"] });
-    queryClient.invalidateQueries({ queryKey: ["site_education"] });
-    queryClient.invalidateQueries({ queryKey: ["site_skills"] });
-    queryClient.invalidateQueries({ queryKey: ["site_certifications"] });
-    queryClient.invalidateQueries({ queryKey: ["site_projects"] });
+    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects"].forEach(
+      key => queryClient.invalidateQueries({ queryKey: [key] })
+    );
   };
+
+  const handleReorder = useCallback(async (tableName: string, items: any[], setItems: (items: any[]) => void, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = items.findIndex(i => i.id === active.id);
+    const newIndex = items.findIndex(i => i.id === over.id);
+    const reordered = arrayMove(items, oldIndex, newIndex);
+    setItems(reordered);
+    
+    await Promise.all(reordered.map((item, idx) =>
+      supabase.from(tableName).update({ sort_order: idx } as any).eq("id", item.id)
+    ));
+    invalidateAll();
+  }, []);
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("submissions").delete().eq("id", id);
     if (error) toast({ title: "Error", description: "Failed to delete.", variant: "destructive" });
-    else { setSubmissions((prev) => prev.filter((s) => s.id !== id)); toast({ title: "Deleted" }); }
+    else { setSubmissions(prev => prev.filter(s => s.id !== id)); toast({ title: "Deleted" }); }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/admin");
-  };
+  const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin"); };
 
-  // Hero save
   const saveHero = async () => {
     if (!hero) return;
     const { error } = await supabase.from("site_hero").update({
-      full_name: hero.full_name,
-      tagline: hero.tagline,
-      location: hero.location,
-      email: hero.email,
-      phone: hero.phone,
-      linkedin_url: hero.linkedin_url,
-      github_url: hero.github_url,
+      full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
+      email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
     }).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
   };
 
-  // Add experience
   const addExperience = async () => {
     if (!newExp.company || !newExp.role || !newExp.period) return;
-    const { error } = await supabase.from("site_experiences").insert({ ...newExp, sort_order: experiences.length });
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { setNewExp({ company: "", role: "", period: "", location: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" }); }
+    await supabase.from("site_experiences").insert({ ...newExp, sort_order: experiences.length });
+    setNewExp({ company: "", role: "", period: "", location: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
-  const deleteExperience = async (id: string) => {
-    await supabase.from("site_experiences").delete().eq("id", id);
-    loadAll(); invalidateAll();
-  };
-
-  // Add education
   const addEducation = async () => {
     if (!newEdu.institution || !newEdu.degree || !newEdu.period) return;
-    const { error } = await supabase.from("site_education").insert({ ...newEdu, sort_order: education.length });
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { setNewEdu({ institution: "", degree: "", period: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" }); }
+    await supabase.from("site_education").insert({ ...newEdu, sort_order: education.length });
+    setNewEdu({ institution: "", degree: "", period: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
-  const deleteEducation = async (id: string) => {
-    await supabase.from("site_education").delete().eq("id", id);
-    loadAll(); invalidateAll();
-  };
-
-  // Add skill
   const addSkill = async () => {
     if (!newSkill.trim()) return;
     await supabase.from("site_skills").insert({ name: newSkill.trim(), sort_order: skills.length });
     setNewSkill(""); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
-  const deleteSkill = async (id: string) => {
-    await supabase.from("site_skills").delete().eq("id", id);
-    loadAll(); invalidateAll();
-  };
-
-  // Add certification
   const addCertification = async () => {
     if (!newCert.trim()) return;
     await supabase.from("site_certifications").insert({ name: newCert.trim(), sort_order: certifications.length });
     setNewCert(""); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
-  const deleteCertification = async (id: string) => {
-    await supabase.from("site_certifications").delete().eq("id", id);
-    loadAll(); invalidateAll();
+  const uploadCertImage = async (certId: string, file: File) => {
+    const ext = file.name.split('.').pop();
+    const path = `${certId}.${ext}`;
+    const { error } = await supabase.storage.from("certificates").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+    const { data: { publicUrl } } = supabase.storage.from("certificates").getPublicUrl(path);
+    await supabase.from("site_certifications").update({ image_url: publicUrl } as any).eq("id", certId);
+    loadAll(); invalidateAll(); toast({ title: "Image uploaded!" });
   };
 
-  // Add project
   const addProject = async () => {
     if (!newProject.title.trim()) return;
     const bullets = newProject.bullets.split("\n").filter(b => b.trim());
-    await supabase.from("site_projects").insert({ title: newProject.title.trim(), bullets, sort_order: projects.length });
-    setNewProject({ title: "", bullets: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
+    await supabase.from("site_projects").insert({
+      title: newProject.title.trim(), bullets, sort_order: projects.length,
+      project_url: newProject.project_url || "",
+    } as any);
+    setNewProject({ title: "", bullets: "", project_url: "" }); loadAll(); invalidateAll(); toast({ title: "Added!" });
   };
 
-  const deleteProject = async (id: string) => {
-    await supabase.from("site_projects").delete().eq("id", id);
+  const deleteItem = async (table: string, id: string) => {
+    await supabase.from(table).delete().eq("id", id);
     loadAll(); invalidateAll();
   };
 
@@ -212,30 +201,19 @@ const AdminDashboard = () => {
                 {hero && (
                   <>
                     <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium text-foreground">Full Name</label>
-                        <Input value={hero.full_name} onChange={e => setHero({ ...hero, full_name: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-foreground">Location</label>
-                        <Input value={hero.location} onChange={e => setHero({ ...hero, location: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-foreground">Email</label>
-                        <Input value={hero.email} onChange={e => setHero({ ...hero, email: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-foreground">Phone</label>
-                        <Input value={hero.phone || ""} onChange={e => setHero({ ...hero, phone: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-foreground">LinkedIn URL</label>
-                        <Input value={hero.linkedin_url || ""} onChange={e => setHero({ ...hero, linkedin_url: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-foreground">GitHub URL</label>
-                        <Input value={hero.github_url || ""} onChange={e => setHero({ ...hero, github_url: e.target.value })} />
-                      </div>
+                      {[
+                        { label: "Full Name", key: "full_name" },
+                        { label: "Location", key: "location" },
+                        { label: "Email", key: "email" },
+                        { label: "Phone", key: "phone" },
+                        { label: "LinkedIn URL", key: "linkedin_url" },
+                        { label: "GitHub URL", key: "github_url" },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label className="text-sm font-medium text-foreground">{f.label}</label>
+                          <Input value={hero[f.key] || ""} onChange={e => setHero({ ...hero, [f.key]: e.target.value })} />
+                        </div>
+                      ))}
                     </div>
                     <div>
                       <label className="text-sm font-medium text-foreground">Tagline</label>
@@ -251,17 +229,23 @@ const AdminDashboard = () => {
           {/* Experience Tab */}
           <TabsContent value="experience">
             <Card>
-              <CardHeader><CardTitle>Experience</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Experience (drag to reorder)</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                {experiences.map(exp => (
-                  <div key={exp.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <div>
-                      <p className="font-semibold text-foreground">{exp.company}</p>
-                      <p className="text-sm text-muted-foreground">{exp.role} • {exp.period}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteExperience(exp.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                ))}
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_experiences", experiences, setExperiences, e)}>
+                  <SortableContext items={experiences.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {experiences.map(exp => (
+                      <SortableItem key={exp.id} id={exp.id}>
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div>
+                            <p className="font-semibold text-foreground">{exp.company}</p>
+                            <p className="text-sm text-muted-foreground">{exp.role} • {exp.period}</p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => deleteItem("site_experiences", exp.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
                 <div className="border-t border-border pt-4 space-y-3">
                   <p className="text-sm font-medium text-foreground">Add New</p>
                   <div className="grid md:grid-cols-2 gap-3">
@@ -279,17 +263,23 @@ const AdminDashboard = () => {
           {/* Education Tab */}
           <TabsContent value="education">
             <Card>
-              <CardHeader><CardTitle>Education</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Education (drag to reorder)</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                {education.map(edu => (
-                  <div key={edu.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <div>
-                      <p className="font-semibold text-foreground">{edu.institution}</p>
-                      <p className="text-sm text-muted-foreground">{edu.degree} • {edu.period}</p>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteEducation(edu.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                ))}
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_education", education, setEducation, e)}>
+                  <SortableContext items={education.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {education.map(edu => (
+                      <SortableItem key={edu.id} id={edu.id}>
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div>
+                            <p className="font-semibold text-foreground">{edu.institution}</p>
+                            <p className="text-sm text-muted-foreground">{edu.degree} • {edu.period}</p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => deleteItem("site_education", edu.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
                 <div className="border-t border-border pt-4 space-y-3">
                   <p className="text-sm font-medium text-foreground">Add New</p>
                   <Input placeholder="Institution" value={newEdu.institution} onChange={e => setNewEdu({ ...newEdu, institution: e.target.value })} />
@@ -304,16 +294,20 @@ const AdminDashboard = () => {
           {/* Skills Tab */}
           <TabsContent value="skills">
             <Card>
-              <CardHeader><CardTitle>Skills</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Skills (drag to reorder)</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  {skills.map(s => (
-                    <span key={s.id} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm">
-                      {s.name}
-                      <button onClick={() => deleteSkill(s.id)} className="ml-1 text-destructive hover:text-destructive/80"><X className="h-3 w-3" /></button>
-                    </span>
-                  ))}
-                </div>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_skills", skills, setSkills, e)}>
+                  <SortableContext items={skills.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {skills.map(s => (
+                      <SortableItem key={s.id} id={s.id}>
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm">
+                          {s.name}
+                          <button onClick={() => deleteItem("site_skills", s.id)} className="ml-1 text-destructive hover:text-destructive/80"><X className="h-3 w-3" /></button>
+                        </span>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
                 <div className="flex gap-2">
                   <Input placeholder="New skill" value={newSkill} onChange={e => setNewSkill(e.target.value)} onKeyDown={e => e.key === "Enter" && addSkill()} />
                   <Button onClick={addSkill} className="gap-2"><Plus className="h-4 w-4" /> Add</Button>
@@ -325,14 +319,33 @@ const AdminDashboard = () => {
           {/* Certifications Tab */}
           <TabsContent value="certifications">
             <Card>
-              <CardHeader><CardTitle>Certifications</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Certifications (drag to reorder)</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                {certifications.map(c => (
-                  <div key={c.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <p className="text-sm text-foreground">{c.name}</p>
-                    <Button variant="ghost" size="icon" onClick={() => deleteCertification(c.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                ))}
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_certifications", certifications, setCertifications, e)}>
+                  <SortableContext items={certifications.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {certifications.map(c => (
+                      <SortableItem key={c.id} id={c.id}>
+                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                          <div className="flex-1">
+                            <p className="text-sm text-foreground">{c.name}</p>
+                            {(c as any).image_url && (
+                              <img src={(c as any).image_url} alt={c.name} className="mt-2 h-16 rounded border border-border" />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <label className="cursor-pointer">
+                              <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadCertImage(c.id, f); }} />
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
+                                <Upload className="h-3 w-3" /> Image
+                              </span>
+                            </label>
+                            <Button variant="ghost" size="icon" onClick={() => deleteItem("site_certifications", c.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                          </div>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
                 <div className="flex gap-2">
                   <Input placeholder="New certification" value={newCert} onChange={e => setNewCert(e.target.value)} onKeyDown={e => e.key === "Enter" && addCertification()} />
                   <Button onClick={addCertification} className="gap-2"><Plus className="h-4 w-4" /> Add</Button>
@@ -344,22 +357,30 @@ const AdminDashboard = () => {
           {/* Projects Tab */}
           <TabsContent value="projects">
             <Card>
-              <CardHeader><CardTitle>Projects</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Projects (drag to reorder)</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                {projects.map(p => (
-                  <div key={p.id} className="flex items-start justify-between p-3 rounded-lg border border-border">
-                    <div>
-                      <p className="font-semibold text-foreground">{p.title}</p>
-                      {Array.isArray(p.bullets) && (p.bullets as string[]).map((b: string, i: number) => (
-                        <p key={i} className="text-sm text-muted-foreground">• {b}</p>
-                      ))}
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => deleteProject(p.id)} className="text-destructive shrink-0"><Trash2 className="h-4 w-4" /></Button>
-                  </div>
-                ))}
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={e => handleReorder("site_projects", projects, setProjects, e)}>
+                  <SortableContext items={projects.map(x => x.id)} strategy={verticalListSortingStrategy}>
+                    {projects.map(p => (
+                      <SortableItem key={p.id} id={p.id}>
+                        <div className="flex items-start justify-between p-3 rounded-lg border border-border">
+                          <div>
+                            <p className="font-semibold text-foreground">{p.title}</p>
+                            {(p as any).project_url && <p className="text-xs text-primary truncate">{(p as any).project_url}</p>}
+                            {Array.isArray(p.bullets) && (p.bullets as string[]).map((b: string, i: number) => (
+                              <p key={i} className="text-sm text-muted-foreground">• {b}</p>
+                            ))}
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => deleteItem("site_projects", p.id)} className="text-destructive shrink-0"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
+                </DndContext>
                 <div className="border-t border-border pt-4 space-y-3">
                   <p className="text-sm font-medium text-foreground">Add New Project</p>
                   <Input placeholder="Project Title" value={newProject.title} onChange={e => setNewProject({ ...newProject, title: e.target.value })} />
+                  <Input placeholder="Project URL (GitHub, demo, etc.)" value={newProject.project_url} onChange={e => setNewProject({ ...newProject, project_url: e.target.value })} />
                   <Textarea placeholder="Bullet points (one per line)" value={newProject.bullets} onChange={e => setNewProject({ ...newProject, bullets: e.target.value })} rows={4} />
                   <Button onClick={addProject} className="gap-2"><Plus className="h-4 w-4" /> Add Project</Button>
                 </div>
@@ -379,16 +400,12 @@ const AdminDashboard = () => {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Phone</TableHead>
-                          <TableHead>Message</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead className="w-16">Action</TableHead>
+                          <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead>
+                          <TableHead>Message</TableHead><TableHead>Date</TableHead><TableHead className="w-16">Action</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {submissions.map((sub) => (
+                        {submissions.map(sub => (
                           <TableRow key={sub.id}>
                             <TableCell className="font-medium">{sub.name}</TableCell>
                             <TableCell>{sub.email}</TableCell>
