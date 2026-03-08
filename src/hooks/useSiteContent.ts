@@ -54,3 +54,12 @@ export const useProjects = () =>
       return data ?? [];
     },
   });
+
+export const useStats = () =>
+  useQuery({
+    queryKey: ["site_stats"],
+    queryFn: async () => {
+      const { data } = await supabase.from("site_stats").select("*").order("sort_order");
+      return data ?? [];
+    },
+  });
