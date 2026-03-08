@@ -12,18 +12,27 @@ const StatsSection = () => {
   const { data: stats } = useStats();
   const { data: visitorCount } = useVisitorCount();
 
-  // Track visitor on mount
+  // Track visitor on mount - only once per unique visitor (localStorage persists across sessions)
   useEffect(() => {
     const trackVisit = async () => {
-      // Use a simple fingerprint based on session
-      let visitorId = sessionStorage.getItem("visitor_id");
+      let visitorId = localStorage.getItem("portfolio_visitor_id");
       if (!visitorId) {
         visitorId = crypto.randomUUID();
-        sessionStorage.setItem("visitor_id", visitorId);
-        // Only insert once per session
-        await supabase.from("site_visitors").insert({
+        localStorage.setItem("portfolio_visitor_id", visitorId);
+        
+        // Get real visitor info
+        const userAgent = navigator.userAgent;
+        const screenSize = `${screen.width}x${screen.height}`;
+        const language = navigator.language;
+        const platform = navigator.platform || "Unknown";
+
+        await (supabase as any).from("site_visitors").insert({
           visitor_id: visitorId,
           page: window.location.pathname,
+          user_agent: userAgent,
+          screen_size: screenSize,
+          language: language,
+          platform: platform,
         });
       }
     };
