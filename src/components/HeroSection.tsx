@@ -74,7 +74,7 @@ const HeroSection = () => {
             <Button size="lg" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl glow-primary hover:scale-105 transition-transform bg-gradient-to-r from-primary to-primary/80" asChild>
               <a href="#skills"><Eye className="h-5 w-5" /> View My Skills</a>
             </Button>
-            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-primary/40 text-hero-foreground hover:bg-primary/10" asChild>
+            <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-white/40 bg-white/10 text-white hover:bg-white/20" asChild>
               <a href="#contact"><Mail className="h-5 w-5" /> Get In Touch</a>
             </Button>
           </motion.div>
