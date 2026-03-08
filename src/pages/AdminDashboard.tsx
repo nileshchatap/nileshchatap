@@ -25,6 +25,7 @@ interface Submission {
 
 const AdminDashboard = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -62,7 +63,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -71,6 +72,7 @@ const AdminDashboard = () => {
       supabase.from("site_certifications").select("*").order("sort_order"),
       supabase.from("site_projects").select("*").order("sort_order"),
       supabase.from("site_stats").select("*").order("sort_order"),
+      (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -80,6 +82,7 @@ const AdminDashboard = () => {
     setCertifications(cert.data || []);
     setProjects(proj.data || []);
     setStats(st.data || []);
+    setSubscribers(subs.data || []);
     setLoading(false);
   };
 
@@ -252,6 +255,7 @@ const AdminDashboard = () => {
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
             <TabsTrigger value="submissions">Submissions ({submissions.length})</TabsTrigger>
+            <TabsTrigger value="subscribers">Subscribers ({subscribers.length})</TabsTrigger>
           </TabsList>
 
           {/* Hero Tab */}
@@ -567,6 +571,47 @@ const AdminDashboard = () => {
                             <TableCell className="text-sm text-muted-foreground">{new Date(sub.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>
                               <Button variant="ghost" size="icon" onClick={() => handleDelete(sub.id)} className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Newsletter Subscribers Tab */}
+          <TabsContent value="subscribers">
+            <Card>
+              <CardHeader><CardTitle>Newsletter Subscribers ({subscribers.length})</CardTitle></CardHeader>
+              <CardContent>
+                {subscribers.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No subscribers yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead className="w-16">Action</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {subscribers.map((sub: any) => (
+                          <TableRow key={sub.id}>
+                            <TableCell className="font-medium">{sub.email}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{new Date(sub.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              <Button variant="ghost" size="icon" onClick={async () => {
+                                await (supabase as any).from("newsletter_subscribers").delete().eq("id", sub.id);
+                                setSubscribers(prev => prev.filter((s: any) => s.id !== sub.id));
+                                toast({ title: "Subscriber deleted" });
+                              }} className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
