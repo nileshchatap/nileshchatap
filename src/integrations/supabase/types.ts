@@ -50,6 +50,24 @@ export type Database = {
         }
         Relationships: []
       }
+      site_about: {
+        Row: {
+          content: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_certifications: {
         Row: {
           id: string
