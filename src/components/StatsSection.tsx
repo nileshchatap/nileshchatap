@@ -55,7 +55,7 @@ const StatsSection = () => {
         ip_address: ipAddress,
       });
 
-      if (!error) {
+      if (!error && isNewVisitor) {
         localStorage.setItem("portfolio_visitor_id", visitorId);
       }
     };
