@@ -3,6 +3,7 @@ import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useHero } from "@/hooks/useSiteContent";
+import { useState, useEffect } from "react";
 
 const HeroSection = () => {
   const { data: hero } = useHero();
