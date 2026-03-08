@@ -948,6 +948,32 @@ const AdminDashboard = () => {
                           );
                         })()}
                       </div>
+
+                      {/* Screen Resolution Breakdown */}
+                      <div className="p-4 rounded-lg border border-border">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Screen Resolution</h3>
+                        {(() => {
+                          const resCounts: Record<string, number> = {};
+                          visitors.forEach(v => {
+                            const res = v.screen_size || "Unknown";
+                            resCounts[res] = (resCounts[res] || 0) + 1;
+                          });
+                          const resData = Object.entries(resCounts)
+                            .sort((a, b) => b[1] - a[1])
+                            .slice(0, 8)
+                            .map(([name, value]) => ({ name, value }));
+                          return (
+                            <ResponsiveContainer width="100%" height={200}>
+                              <BarChart data={resData} layout="vertical">
+                                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={90} />
+                                <Tooltip />
+                                <Bar dataKey="value" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          );
+                        })()}
+                      </div>
                     </div>
                   );
                 })()}
