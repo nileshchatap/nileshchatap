@@ -10,6 +10,7 @@ const HeroSection = () => {
   const fullName = hero?.full_name ?? "Nilesh Chatap";
   const [firstName, ...rest] = fullName.split(" ");
   const lastName = rest.join(" ");
+  const photoUrl = (hero as any)?.photo_url || "";
   const tagline = hero?.tagline ?? "";
   const location = hero?.location ?? "";
   const email = hero?.email ?? "";
