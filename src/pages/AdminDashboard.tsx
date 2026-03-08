@@ -90,9 +90,16 @@ const AdminDashboard = () => {
   };
 
   const invalidateAll = () => {
-    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects", "site_stats"].forEach(
+    ["site_hero", "site_experiences", "site_education", "site_skills", "site_certifications", "site_projects", "site_stats", "site_about"].forEach(
       key => queryClient.invalidateQueries({ queryKey: [key] })
     );
+  };
+
+  const saveAbout = async () => {
+    if (!about) return;
+    const { error } = await (supabase as any).from("site_about").update({ content: about.content }).eq("id", about.id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "About updated!" }); invalidateAll(); }
   };
 
   const handleReorder = useCallback(async (tableName: string, items: any[], setItems: (items: any[]) => void, event: DragEndEvent) => {
