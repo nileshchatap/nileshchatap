@@ -111,9 +111,32 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
-    }).eq("id", hero.id);
+      photo_url: hero.photo_url,
+    } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
+  };
+
+  const uploadHeroPhoto = async (file: File) => {
+    setPhotoUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `hero-photo.${ext}`;
+    const { error } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setPhotoUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
+    const url = publicUrl + "?t=" + Date.now();
+    await (supabase as any).from("site_hero").update({ photo_url: url }).eq("id", hero.id);
+    setHero({ ...hero, photo_url: url });
+    invalidateAll();
+    toast({ title: "Photo uploaded!" });
+    setPhotoUploading(false);
+  };
+
+  const removeHeroPhoto = async () => {
+    await (supabase as any).from("site_hero").update({ photo_url: "" }).eq("id", hero.id);
+    setHero({ ...hero, photo_url: "" });
+    invalidateAll();
+    toast({ title: "Photo removed" });
   };
 
   const addExperience = async () => {
