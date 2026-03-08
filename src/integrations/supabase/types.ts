@@ -35,16 +35,19 @@ export type Database = {
       site_certifications: {
         Row: {
           id: string
+          image_url: string | null
           name: string
           sort_order: number
         }
         Insert: {
           id?: string
+          image_url?: string | null
           name: string
           sort_order?: number
         }
         Update: {
           id?: string
+          image_url?: string | null
           name?: string
           sort_order?: number
         }
@@ -149,6 +152,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          project_url: string | null
           sort_order: number
           title: string
         }
@@ -157,6 +161,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          project_url?: string | null
           sort_order?: number
           title: string
         }
@@ -165,6 +170,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          project_url?: string | null
           sort_order?: number
           title?: string
         }
