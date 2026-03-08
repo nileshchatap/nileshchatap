@@ -702,21 +702,40 @@ const AdminDashboard = () => {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead>#</TableHead>
                           <TableHead>Visitor ID</TableHead>
-                          <TableHead>Page</TableHead>
+                          <TableHead>Platform</TableHead>
+                          <TableHead>Screen</TableHead>
+                          <TableHead>Language</TableHead>
+                          <TableHead>Browser</TableHead>
                           <TableHead>Date & Time</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {visitors.map((v: any) => (
-                          <TableRow key={v.id}>
-                            <TableCell className="font-mono text-xs">{v.visitor_id?.slice(0, 8)}...</TableCell>
-                            <TableCell>{v.page || "/"}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">
-                              {new Date(v.visited_at).toLocaleString()}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {visitors.map((v: any, idx: number) => {
+                          // Extract browser name from user agent
+                          const ua = v.user_agent || "";
+                          let browser = "Unknown";
+                          if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
+                          else if (ua.includes("Firefox")) browser = "Firefox";
+                          else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+                          else if (ua.includes("Edg")) browser = "Edge";
+                          else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+
+                          return (
+                            <TableRow key={v.id}>
+                              <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
+                              <TableCell className="font-mono text-xs text-primary">{v.visitor_id?.slice(0, 12)}</TableCell>
+                              <TableCell className="text-sm">{v.platform || "—"}</TableCell>
+                              <TableCell className="text-sm">{v.screen_size || "—"}</TableCell>
+                              <TableCell className="text-sm">{v.language || "—"}</TableCell>
+                              <TableCell className="text-sm">{browser}</TableCell>
+                              <TableCell className="text-sm text-muted-foreground">
+                                {new Date(v.visited_at).toLocaleString()}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>

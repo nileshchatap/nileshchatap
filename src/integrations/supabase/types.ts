@@ -284,19 +284,31 @@ export type Database = {
       site_visitors: {
         Row: {
           id: string
+          language: string | null
           page: string | null
+          platform: string | null
+          screen_size: string | null
+          user_agent: string | null
           visited_at: string
           visitor_id: string
         }
         Insert: {
           id?: string
+          language?: string | null
           page?: string | null
+          platform?: string | null
+          screen_size?: string | null
+          user_agent?: string | null
           visited_at?: string
           visitor_id: string
         }
         Update: {
           id?: string
+          language?: string | null
           page?: string | null
+          platform?: string | null
+          screen_size?: string | null
+          user_agent?: string | null
           visited_at?: string
           visitor_id?: string
         }
