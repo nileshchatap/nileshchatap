@@ -27,8 +27,9 @@ const ContactForm = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-muted/40 relative overflow-hidden">
-      <div className="absolute top-10 right-10 w-60 h-60 bg-primary/5 rounded-full blur-3xl" />
+    <section id="contact" className="py-24 hero-gradient relative overflow-hidden">
+      <div className="absolute top-10 right-10 w-60 h-60 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-10 left-10 w-72 h-72 bg-accent/8 rounded-full blur-3xl" />
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -36,26 +37,26 @@ const ContactForm = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="max-w-xl mx-auto border-none shadow-xl overflow-hidden">
+          <Card className="max-w-xl mx-auto border-none shadow-xl overflow-hidden glass-dark">
             <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
             <CardHeader className="pb-2">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <div className="p-2 rounded-xl bg-primary/10">
+                <div className="p-2 rounded-xl bg-primary/20">
                   <MessageCircle className="h-5 w-5 text-primary" />
                 </div>
               </div>
-              <CardTitle className="text-2xl md:text-3xl text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <CardTitle className="text-2xl md:text-3xl text-center text-hero-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Get In Touch
               </CardTitle>
-              <p className="text-center text-sm text-muted-foreground mt-1">I'd love to hear from you!</p>
+              <p className="text-center text-sm text-hero-muted mt-1">I'd love to hear from you!</p>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <Input placeholder="Your Name *" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl" />
-                <Input type="email" placeholder="Your Email *" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl" />
-                <Input placeholder="Phone Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-xl" />
-                <Textarea placeholder="Your Message *" required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="rounded-xl" />
-                <Button type="submit" className="w-full gap-2 rounded-xl py-6 text-base glow-primary" disabled={loading}>
+                <Input placeholder="Your Name *" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-xl bg-white/5 border-white/10 text-hero-foreground placeholder:text-hero-muted/50 focus:border-primary" />
+                <Input type="email" placeholder="Your Email *" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-xl bg-white/5 border-white/10 text-hero-foreground placeholder:text-hero-muted/50 focus:border-primary" />
+                <Input placeholder="Phone Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-xl bg-white/5 border-white/10 text-hero-foreground placeholder:text-hero-muted/50 focus:border-primary" />
+                <Textarea placeholder="Your Message *" required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="rounded-xl bg-white/5 border-white/10 text-hero-foreground placeholder:text-hero-muted/50 focus:border-primary" />
+                <Button type="submit" className="w-full gap-2 rounded-xl py-6 text-base glow-primary bg-gradient-to-r from-primary to-primary/80" disabled={loading}>
                   <Send className="h-4 w-4" />
                   {loading ? "Sending..." : "Send Message"}
                 </Button>
