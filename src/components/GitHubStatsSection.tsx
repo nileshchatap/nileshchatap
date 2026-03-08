@@ -129,7 +129,7 @@ const GitHubStatsSection = () => {
   ];
 
   return (
-    <section id="github" className="py-20 hero-gradient relative overflow-hidden border-t border-b border-white/5">
+    <section id="github" className="py-20 hero-gradient relative overflow-hidden border-t border-b border-white/5" style={{ minHeight: '400px' }}>
       <div className="container mx-auto px-6">
         {/* Header */}
         <motion.div
