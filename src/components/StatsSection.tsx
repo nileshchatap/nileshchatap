@@ -15,6 +15,25 @@ const StatsSection = () => {
   // Track every visit - same visitor_id for returning visitors
   useEffect(() => {
     const trackVisit = async () => {
+      // Bot detection - skip tracking for bots/crawlers
+      const ua = navigator.userAgent;
+      const botPatterns = [
+        /bot/i, /crawl/i, /spider/i, /slurp/i, /mediapartners/i,
+        /headless/i, /phantom/i, /selenium/i, /puppeteer/i,
+        /lighthouse/i, /pagespeed/i, /gtmetrix/i, /pingdom/i,
+        /wget/i, /curl/i, /python/i, /java\//i, /go-http/i,
+        /scrapy/i, /nutch/i, /archive/i, /facebookexternalhit/i,
+        /twitterbot/i, /linkedinbot/i, /whatsapp/i, /telegrambot/i,
+        /discordbot/i, /bingpreview/i, /yandex/i, /baidu/i,
+      ];
+      if (botPatterns.some(p => p.test(ua))) return;
+
+      // Check for headless browser signals
+      if (navigator.webdriver) return;
+
+      // Suspicious screen size check (800x600 is common for bots)
+      if (screen.width <= 800 && screen.height <= 600) return;
+
       let visitorId = localStorage.getItem("portfolio_visitor_id");
       const isNewVisitor = !visitorId;
       if (!visitorId) {
@@ -22,7 +41,6 @@ const StatsSection = () => {
       }
 
       // Get real visitor info
-      const userAgent = navigator.userAgent;
       const screenSize = `${screen.width}x${screen.height}`;
       const language = navigator.language;
       const platform = navigator.platform || "Unknown";
@@ -46,7 +64,7 @@ const StatsSection = () => {
       const { error } = await (supabase as any).from("site_visitors").insert({
         visitor_id: visitorId,
         page: window.location.pathname,
-        user_agent: userAgent,
+        user_agent: ua,
         screen_size: screenSize,
         language: language,
         platform: platform,
