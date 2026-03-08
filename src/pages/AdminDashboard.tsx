@@ -117,6 +117,8 @@ const AdminDashboard = () => {
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
       photo_url: hero.photo_url, resume_url: hero.resume_url,
+      twitter_url: hero.twitter_url, instagram_url: hero.instagram_url,
+      youtube_url: hero.youtube_url, website_url: hero.website_url,
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
