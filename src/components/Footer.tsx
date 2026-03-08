@@ -1,8 +1,9 @@
+import * as React from "react";
 import { Github, Linkedin, Mail, Heart } from "lucide-react";
 
-const Footer = () => {
+const Footer = React.forwardRef<HTMLElement>((_, ref) => {
   return (
-    <footer className="py-10" style={{ background: "linear-gradient(180deg, hsl(280 30% 12%) 0%, hsl(250 30% 6%) 100%)" }}>
+    <footer ref={ref} className="py-10" style={{ background: "linear-gradient(180deg, hsl(280 30% 12%) 0%, hsl(250 30% 6%) 100%)" }}>
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-hero-muted text-sm">
@@ -23,6 +24,7 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+Footer.displayName = "Footer";
 
 export default Footer;
