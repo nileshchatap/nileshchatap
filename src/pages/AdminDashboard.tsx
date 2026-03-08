@@ -798,7 +798,7 @@ const AdminDashboard = () => {
                       </div>
 
                       {/* Browser Breakdown */}
-                      <div className="p-4 rounded-lg border border-border lg:col-span-2">
+                      <div className="p-4 rounded-lg border border-border">
                         <h3 className="text-sm font-semibold text-foreground mb-4">Browser Usage</h3>
                         <ResponsiveContainer width="100%" height={180}>
                           <BarChart data={browserData} layout="vertical">
@@ -808,6 +808,82 @@ const AdminDashboard = () => {
                             <Bar dataKey="value" fill="#10b981" radius={[0, 4, 4, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
+                      </div>
+
+                      {/* OS Breakdown */}
+                      <div className="p-4 rounded-lg border border-border">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Operating System</h3>
+                        {(() => {
+                          const osCounts: Record<string, number> = {};
+                          visitors.forEach(v => {
+                            const ua = v.user_agent || "";
+                            let os = "Other";
+                            if (ua.includes("Windows NT 10")) os = "Windows 10/11";
+                            else if (ua.includes("Windows NT")) os = "Windows";
+                            else if (ua.includes("Mac OS X")) os = "macOS";
+                            else if (ua.includes("Android")) os = "Android";
+                            else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+                            else if (ua.includes("Linux")) os = "Linux";
+                            else if (ua.includes("CrOS")) os = "Chrome OS";
+                            osCounts[os] = (osCounts[os] || 0) + 1;
+                          });
+                          const osData = Object.entries(osCounts).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value }));
+                          return (
+                            <ResponsiveContainer width="100%" height={180}>
+                              <PieChart>
+                                <Pie data={osData} cx="50%" cy="50%" outerRadius={70} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                                  {osData.map((_, i) => (
+                                    <Cell key={i} fill={CHART_COLORS[(i + 2) % CHART_COLORS.length]} />
+                                  ))}
+                                </Pie>
+                                <Tooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Device Type (Mobile vs Desktop) */}
+                      <div className="p-4 rounded-lg border border-border lg:col-span-2">
+                        <h3 className="text-sm font-semibold text-foreground mb-4">Device Type</h3>
+                        {(() => {
+                          const deviceCounts: Record<string, number> = { Desktop: 0, Mobile: 0, Tablet: 0 };
+                          visitors.forEach(v => {
+                            const ua = (v.user_agent || "").toLowerCase();
+                            if (ua.includes("ipad") || (ua.includes("android") && !ua.includes("mobile"))) {
+                              deviceCounts["Tablet"]++;
+                            } else if (ua.includes("mobile") || ua.includes("iphone") || ua.includes("android")) {
+                              deviceCounts["Mobile"]++;
+                            } else {
+                              deviceCounts["Desktop"]++;
+                            }
+                          });
+                          const deviceData = Object.entries(deviceCounts).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
+                          const deviceColors = { Desktop: "#6366f1", Mobile: "#f59e0b", Tablet: "#10b981" };
+                          return (
+                            <div className="flex items-center gap-8">
+                              <ResponsiveContainer width="50%" height={180}>
+                                <PieChart>
+                                  <Pie data={deviceData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" nameKey="name" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                                    {deviceData.map((entry) => (
+                                      <Cell key={entry.name} fill={deviceColors[entry.name as keyof typeof deviceColors] || "#8b5cf6"} />
+                                    ))}
+                                  </Pie>
+                                  <Tooltip />
+                                </PieChart>
+                              </ResponsiveContainer>
+                              <div className="flex flex-col gap-3">
+                                {deviceData.map(d => (
+                                  <div key={d.name} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: deviceColors[d.name as keyof typeof deviceColors] || "#8b5cf6" }} />
+                                    <span className="text-sm text-foreground font-medium">{d.name}</span>
+                                    <span className="text-sm text-muted-foreground">({d.value})</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   );
