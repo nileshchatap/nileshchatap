@@ -2,7 +2,7 @@ import { Github, Linkedin, Mail, Heart } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="hero-gradient py-10">
+    <footer className="py-10" style={{ background: "linear-gradient(180deg, hsl(280 30% 12%) 0%, hsl(250 30% 6%) 100%)" }}>
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-hero-muted text-sm">
