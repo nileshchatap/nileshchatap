@@ -581,6 +581,47 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Newsletter Subscribers Tab */}
+          <TabsContent value="subscribers">
+            <Card>
+              <CardHeader><CardTitle>Newsletter Subscribers ({subscribers.length})</CardTitle></CardHeader>
+              <CardContent>
+                {subscribers.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No subscribers yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead className="w-16">Action</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {subscribers.map((sub: any) => (
+                          <TableRow key={sub.id}>
+                            <TableCell className="font-medium">{sub.email}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{new Date(sub.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              <Button variant="ghost" size="icon" onClick={async () => {
+                                await (supabase as any).from("newsletter_subscribers").delete().eq("id", sub.id);
+                                setSubscribers(prev => prev.filter((s: any) => s.id !== sub.id));
+                                toast({ title: "Subscriber deleted" });
+                              }} className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
     </div>
