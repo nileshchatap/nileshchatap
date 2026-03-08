@@ -28,6 +28,10 @@ const ContactForm = () => {
   const phone = hero?.phone ?? "";
   const linkedinUrl = hero?.linkedin_url ?? "";
   const githubUrl = hero?.github_url ?? "";
+  const twitterUrl = (hero as any)?.twitter_url ?? "";
+  const instagramUrl = (hero as any)?.instagram_url ?? "";
+  const youtubeUrl = (hero as any)?.youtube_url ?? "";
+  const websiteUrl = (hero as any)?.website_url ?? "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
