@@ -140,6 +140,28 @@ const AdminDashboard = () => {
     toast({ title: "Photo removed" });
   };
 
+  const uploadResume = async (file: File) => {
+    setResumeUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `resume.${ext}`;
+    const { error } = await supabase.storage.from("resumes").upload(path, file, { upsert: true });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setResumeUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("resumes").getPublicUrl(path);
+    const url = publicUrl + "?t=" + Date.now();
+    await (supabase as any).from("site_hero").update({ resume_url: url }).eq("id", hero.id);
+    setHero({ ...hero, resume_url: url });
+    invalidateAll();
+    toast({ title: "Resume uploaded!" });
+    setResumeUploading(false);
+  };
+
+  const removeResume = async () => {
+    await (supabase as any).from("site_hero").update({ resume_url: "" }).eq("id", hero.id);
+    setHero({ ...hero, resume_url: "" });
+    invalidateAll();
+    toast({ title: "Resume removed" });
+  };
+
   const addExperience = async () => {
     if (!newExp.company || !newExp.role || !newExp.period) return;
     await supabase.from("site_experiences").insert({ ...newExp, sort_order: experiences.length });
