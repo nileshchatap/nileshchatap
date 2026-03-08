@@ -356,6 +356,7 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: { _email: string }; Returns: boolean }
+      unique_visitor_count: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
