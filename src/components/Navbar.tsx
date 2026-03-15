@@ -2,11 +2,18 @@ import { Menu, X, Shield, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useHero } from "@/hooks/useSiteContent";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { data: hero } = useHero();
+
+  const logoUrl = (hero as any)?.logo_url || "";
+  const fullName = hero?.full_name ?? "Nilesh Chatap";
+  const [firstName, ...rest] = fullName.split(" ");
+  const lastName = rest.join(" ");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -48,9 +55,13 @@ const Navbar = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "glass shadow-lg border-b border-border/30" : "bg-transparent border-b border-white/10"}`}>
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
-        <a href="/" className={`text-xl font-bold ${textColor} flex items-center gap-1.5 transition-colors`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-          <Sparkles className="h-5 w-5 text-primary" />
-          Nilesh <span className="text-gradient-purple">Chatap</span>
+        <a href="/" className={`text-xl font-bold ${textColor} flex items-center gap-2 transition-colors`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo" className="h-8 w-8 rounded object-contain" />
+          ) : (
+            <Sparkles className="h-5 w-5 text-primary" />
+          )}
+          {firstName} <span className="text-gradient-purple">{lastName}</span>
         </a>
 
         <div className="hidden md:flex items-center gap-6">

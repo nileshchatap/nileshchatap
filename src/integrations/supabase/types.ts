@@ -159,6 +159,7 @@ export type Database = {
           kaggle_url: string | null
           linkedin_url: string | null
           location: string
+          logo_url: string | null
           other_url: string | null
           other_url_label: string | null
           phone: string | null
@@ -179,6 +180,7 @@ export type Database = {
           kaggle_url?: string | null
           linkedin_url?: string | null
           location?: string
+          logo_url?: string | null
           other_url?: string | null
           other_url_label?: string | null
           phone?: string | null
@@ -199,6 +201,7 @@ export type Database = {
           kaggle_url?: string | null
           linkedin_url?: string | null
           location?: string
+          logo_url?: string | null
           other_url?: string | null
           other_url_label?: string | null
           phone?: string | null

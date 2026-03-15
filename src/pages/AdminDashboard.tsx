@@ -52,6 +52,7 @@ const AdminDashboard = () => {
   const [newStat, setNewStat] = useState({ icon: "Award", value: "", label: "" });
   const [photoUploading, setPhotoUploading] = useState(false);
   const [resumeUploading, setResumeUploading] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -137,7 +138,7 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
-      photo_url: hero.photo_url, resume_url: hero.resume_url,
+      photo_url: hero.photo_url, resume_url: hero.resume_url, logo_url: hero.logo_url,
       twitter_url: hero.twitter_url, instagram_url: hero.instagram_url,
       youtube_url: hero.youtube_url, website_url: hero.website_url,
       kaggle_url: hero.kaggle_url, other_url: hero.other_url, other_url_label: hero.other_url_label,
@@ -302,6 +303,47 @@ const AdminDashboard = () => {
                         {hero.photo_url && (
                           <Button variant="destructive" size="sm" onClick={removeHeroPhoto} className="gap-1 w-fit">
                             <Trash2 className="h-3 w-3" /> Remove Photo
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    {/* Logo Upload */}
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                      {hero.logo_url ? (
+                        <img src={hero.logo_url} alt="Logo" className="w-20 h-20 rounded-lg object-contain border-2 border-primary bg-secondary p-1" />
+                      ) : (
+                        <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground text-xs">No logo</div>
+                      )}
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm font-medium text-foreground">Site Logo</p>
+                        <label className="cursor-pointer">
+                          <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                            const f = e.target.files?.[0]; if (!f) return;
+                            setLogoUploading(true);
+                            const ext = f.name.split('.').pop();
+                            const path = `site-logo.${ext}`;
+                            const { error } = await supabase.storage.from("profile-photos").upload(path, f, { upsert: true });
+                            if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setLogoUploading(false); return; }
+                            const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
+                            const url = publicUrl + "?t=" + Date.now();
+                            await (supabase as any).from("site_hero").update({ logo_url: url }).eq("id", hero.id);
+                            setHero({ ...hero, logo_url: url });
+                            invalidateAll();
+                            toast({ title: "Logo uploaded!" });
+                            setLogoUploading(false);
+                          }} />
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+                            <Upload className="h-4 w-4" /> {logoUploading ? "Uploading..." : "Upload Logo"}
+                          </span>
+                        </label>
+                        {hero.logo_url && (
+                          <Button variant="destructive" size="sm" onClick={async () => {
+                            await (supabase as any).from("site_hero").update({ logo_url: "" }).eq("id", hero.id);
+                            setHero({ ...hero, logo_url: "" });
+                            invalidateAll();
+                            toast({ title: "Logo removed" });
+                          }} className="gap-1 w-fit">
+                            <Trash2 className="h-3 w-3" /> Remove Logo
                           </Button>
                         )}
                       </div>
