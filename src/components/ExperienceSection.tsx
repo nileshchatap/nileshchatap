@@ -16,6 +16,7 @@ const item = {
 
 const ExperienceSection = () => {
   const { data: experiences = [] } = useExperiences();
+  const [selectedCert, setSelectedCert] = useState<string | null>(null);
 
   return (
     <section id="experience" className="py-24 hero-gradient relative overflow-hidden">
