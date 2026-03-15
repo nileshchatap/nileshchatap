@@ -118,6 +118,7 @@ export type Database = {
       }
       site_experiences: {
         Row: {
+          certificate_url: string | null
           company: string
           created_at: string
           id: string
@@ -127,6 +128,7 @@ export type Database = {
           sort_order: number
         }
         Insert: {
+          certificate_url?: string | null
           company: string
           created_at?: string
           id?: string
@@ -136,6 +138,7 @@ export type Database = {
           sort_order?: number
         }
         Update: {
+          certificate_url?: string | null
           company?: string
           created_at?: string
           id?: string

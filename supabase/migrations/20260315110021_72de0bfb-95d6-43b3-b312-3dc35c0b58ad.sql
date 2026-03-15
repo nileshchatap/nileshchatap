@@ -1,0 +1,1 @@
+ALTER TABLE public.site_experiences ADD COLUMN certificate_url text DEFAULT null;
