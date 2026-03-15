@@ -52,6 +52,7 @@ const AdminDashboard = () => {
   const [newStat, setNewStat] = useState({ icon: "Award", value: "", label: "" });
   const [photoUploading, setPhotoUploading] = useState(false);
   const [resumeUploading, setResumeUploading] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
