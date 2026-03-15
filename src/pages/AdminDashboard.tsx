@@ -390,11 +390,35 @@ const AdminDashboard = () => {
                     {experiences.map(exp => (
                       <SortableItem key={exp.id} id={exp.id}>
                         <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-                          <div>
+                          <div className="flex-1">
                             <p className="font-semibold text-foreground">{exp.company}</p>
                             <p className="text-sm text-muted-foreground">{exp.role} • {exp.period}</p>
+                            {(exp as any).certificate_url && (
+                              <a href={(exp as any).certificate_url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary underline">View Certificate</a>
+                            )}
                           </div>
-                          <Button variant="ghost" size="icon" onClick={() => deleteItem("site_experiences", exp.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                          <div className="flex items-center gap-1">
+                            <label className="cursor-pointer">
+                              <input type="file" accept="image/*" className="hidden" onChange={e => {
+                                const f = e.target.files?.[0];
+                                if (f) {
+                                  const ext = f.name.split('.').pop();
+                                  const path = `exp-${exp.id}.${ext}`;
+                                  supabase.storage.from("certificates").upload(path, f, { upsert: true }).then(({ error }) => {
+                                    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+                                    const { data: { publicUrl } } = supabase.storage.from("certificates").getPublicUrl(path);
+                                    (supabase as any).from("site_experiences").update({ certificate_url: publicUrl }).eq("id", exp.id).then(() => {
+                                      loadAll(); invalidateAll(); toast({ title: "Certificate uploaded!" });
+                                    });
+                                  });
+                                }
+                              }} />
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer">
+                                <Upload className="h-3 w-3" /> Cert
+                              </span>
+                            </label>
+                            <Button variant="ghost" size="icon" onClick={() => deleteItem("site_experiences", exp.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                          </div>
                         </div>
                       </SortableItem>
                     ))}

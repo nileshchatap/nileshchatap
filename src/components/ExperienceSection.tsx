@@ -48,23 +48,48 @@ const ExperienceSection = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {experiences.map((exp) => (
-            <motion.div key={exp.id} variants={item}>
-              <Card className="card-hover group border-none shadow-md overflow-hidden glass-dark bg-transparent">
-                <div className="h-1 bg-gradient-to-r from-primary to-accent" />
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold text-hero-foreground group-hover:text-primary transition-colors">{exp.company}</h3>
-                  <p className="text-hero-accent font-semibold mt-1">{exp.role}</p>
-                  <div className="flex flex-wrap gap-4 mt-3 text-sm text-hero-muted">
-                    <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {exp.period}</span>
-                    {exp.location && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> {exp.location}</span>}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+          {experiences.map((exp) => {
+            const certUrl = (exp as any).certificate_url;
+            return (
+              <motion.div key={exp.id} variants={item}>
+                <Card
+                  className={`card-hover group border-none shadow-md overflow-hidden glass-dark bg-transparent ${certUrl ? "cursor-pointer" : ""}`}
+                  onClick={() => certUrl && setSelectedCert(certUrl)}
+                >
+                  <div className="h-1 bg-gradient-to-r from-primary to-accent" />
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-hero-foreground group-hover:text-primary transition-colors">{exp.company}</h3>
+                        <p className="text-hero-accent font-semibold mt-1">{exp.role}</p>
+                        <div className="flex flex-wrap gap-4 mt-3 text-sm text-hero-muted">
+                          <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {exp.period}</span>
+                          {exp.location && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> {exp.location}</span>}
+                        </div>
+                      </div>
+                      {certUrl && (
+                        <div className="flex items-center gap-1.5 text-hero-accent shrink-0">
+                          <Award className="h-4 w-4" />
+                          <span className="text-xs">Certificate</span>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
+
+      <Dialog open={!!selectedCert} onOpenChange={() => setSelectedCert(null)}>
+        <DialogContent className="max-w-3xl p-2">
+          {selectedCert && (
+            <img src={selectedCert} alt="Experience Certificate" className="w-full h-auto rounded-lg" />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
