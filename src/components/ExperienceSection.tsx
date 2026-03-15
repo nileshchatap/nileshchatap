@@ -1,7 +1,9 @@
-import { Briefcase, MapPin, Calendar } from "lucide-react";
+import { Briefcase, MapPin, Calendar, Award, ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import { useExperiences } from "@/hooks/useSiteContent";
+import { useState } from "react";
 
 const container = {
   hidden: { opacity: 0 },
