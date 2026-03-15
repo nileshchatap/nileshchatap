@@ -1,0 +1,1 @@
+ALTER TABLE public.site_hero ADD COLUMN logo_url text DEFAULT '';
