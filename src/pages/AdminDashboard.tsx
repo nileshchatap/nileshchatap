@@ -307,6 +307,47 @@ const AdminDashboard = () => {
                         )}
                       </div>
                     </div>
+                    {/* Logo Upload */}
+                    <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
+                      {hero.logo_url ? (
+                        <img src={hero.logo_url} alt="Logo" className="w-20 h-20 rounded-lg object-contain border-2 border-primary bg-secondary p-1" />
+                      ) : (
+                        <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground text-xs">No logo</div>
+                      )}
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm font-medium text-foreground">Site Logo</p>
+                        <label className="cursor-pointer">
+                          <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                            const f = e.target.files?.[0]; if (!f) return;
+                            setLogoUploading(true);
+                            const ext = f.name.split('.').pop();
+                            const path = `site-logo.${ext}`;
+                            const { error } = await supabase.storage.from("profile-photos").upload(path, f, { upsert: true });
+                            if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setLogoUploading(false); return; }
+                            const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
+                            const url = publicUrl + "?t=" + Date.now();
+                            await (supabase as any).from("site_hero").update({ logo_url: url }).eq("id", hero.id);
+                            setHero({ ...hero, logo_url: url });
+                            invalidateAll();
+                            toast({ title: "Logo uploaded!" });
+                            setLogoUploading(false);
+                          }} />
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer">
+                            <Upload className="h-4 w-4" /> {logoUploading ? "Uploading..." : "Upload Logo"}
+                          </span>
+                        </label>
+                        {hero.logo_url && (
+                          <Button variant="destructive" size="sm" onClick={async () => {
+                            await (supabase as any).from("site_hero").update({ logo_url: "" }).eq("id", hero.id);
+                            setHero({ ...hero, logo_url: "" });
+                            invalidateAll();
+                            toast({ title: "Logo removed" });
+                          }} className="gap-1 w-fit">
+                            <Trash2 className="h-3 w-3" /> Remove Logo
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                     {/* Resume Upload */}
                     <div className="flex items-center gap-4 p-4 rounded-lg border border-border">
                       <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center">
