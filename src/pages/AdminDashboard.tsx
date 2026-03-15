@@ -138,7 +138,7 @@ const AdminDashboard = () => {
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
-      photo_url: hero.photo_url, resume_url: hero.resume_url,
+      photo_url: hero.photo_url, resume_url: hero.resume_url, logo_url: hero.logo_url,
       twitter_url: hero.twitter_url, instagram_url: hero.instagram_url,
       youtube_url: hero.youtube_url, website_url: hero.website_url,
       kaggle_url: hero.kaggle_url, other_url: hero.other_url, other_url_label: hero.other_url_label,
