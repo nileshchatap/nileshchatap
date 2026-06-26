@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Award, Users, FolderKanban, Code, BarChart3, Briefcase, GraduationCap, Star, Eye } from "lucide-react";
-import { useStats, useVisitorCount } from "@/hooks/useSiteContent";
+import { useStats } from "@/hooks/useSiteContent";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,7 +10,6 @@ const iconMap: Record<string, React.ComponentType<any>> = {
 
 const StatsSection = () => {
   const { data: stats } = useStats();
-  const { data: visitorCount } = useVisitorCount();
 
   // Track every visit - same visitor_id for returning visitors
   useEffect(() => {
@@ -82,17 +81,8 @@ const StatsSection = () => {
 
   if (!stats || stats.length === 0) return null;
 
-  // Add visitor count as an extra stat
-  const allStats = [
-    ...stats,
-    {
-      id: "visitors",
-      icon: "Eye",
-      value: `${visitorCount ?? 0}+`,
-      label: "Visitors",
-      sort_order: 999,
-    },
-  ];
+  const allStats = stats;
+
 
   return (
     <section className="py-16 hero-gradient relative overflow-hidden border-t border-b border-white/5">

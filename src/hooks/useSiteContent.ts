@@ -64,15 +64,8 @@ export const useStats = () =>
     },
   });
 
-export const useVisitorCount = () =>
-  useQuery({
-    queryKey: ["site_visitors_count"],
-    queryFn: async () => {
-      const { data } = await supabase.rpc("unique_visitor_count" as any);
-      return (data as number) ?? 0;
-    },
-    refetchInterval: 30000,
-  });
+// Visitor count is now admin-only (see AdminDashboard).
+// Public visitor count was removed to prevent PII/IP exposure via site_visitors.
 
 export const useAbout = () =>
   useQuery({
