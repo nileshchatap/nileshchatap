@@ -80,8 +80,7 @@ const AdminDashboard = () => {
       supabase.from("site_stats").select("*").order("sort_order"),
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("site_about").select("*").limit(1).single(),
-      (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }).limit(100),
-      supabase.rpc("unique_visitor_count" as any),
+      (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -93,8 +92,10 @@ const AdminDashboard = () => {
     setStats(st.data || []);
     setSubscribers(subs.data || []);
     setAbout(ab.data);
-    setVisitors(vis.data || []);
-    setVisitorCount(visCount.data ?? 0);
+    const visitorRows = vis.data || [];
+    setVisitors(visitorRows);
+    const uniqueIds = new Set(visitorRows.map((v: any) => v.visitor_id));
+    setVisitorCount(uniqueIds.size);
     setLoading(false);
   };
 
