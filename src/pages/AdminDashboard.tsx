@@ -69,7 +69,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis, visCount] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
