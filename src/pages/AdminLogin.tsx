@@ -34,7 +34,7 @@ const AdminLogin = () => {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const allowedEmails = ["nileshchatap25@gmail.com", "vishnu53@myyahoo.com"];
+    const allowedEmails = ["vishnu53@myyahoo.com"];
     if (!allowedEmails.includes(email.toLowerCase().trim())) {
       toast({ title: "Access Denied", description: "This email is not authorized for admin access.", variant: "destructive" });
       return;
@@ -44,6 +44,7 @@ const AdminLogin = () => {
       email: email.toLowerCase().trim(),
       options: {
         shouldCreateUser: true,
+        emailRedirectTo: undefined,
       },
     });
     setLoading(false);
@@ -51,8 +52,9 @@ const AdminLogin = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       setStep("otp");
-      toast({ title: "OTP Sent!", description: "Check your email for the 6-digit code or click the verification link." });
+      toast({ title: "OTP Sent!", description: "Check your email for the 6-digit code." });
     }
+
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
@@ -107,7 +109,7 @@ const AdminLogin = () => {
           <CardDescription>
             {step === "email"
               ? "Enter your admin email to receive a one-time password"
-              : `We sent a 6-digit code to ${email}. Enter it below or click the link in your email.`}
+              : `We sent a 6-digit code to ${email}. Enter it below to log in.`}
           </CardDescription>
         </CardHeader>
         <CardContent>
