@@ -134,8 +134,15 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin"); };
 
+  const isValidGithubUrl = (url: string) =>
+    !url || /^https:\/\/(www\.)?github\.com\/[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}\/?$/.test(url.trim());
+
   const saveHero = async () => {
     if (!hero) return;
+    if (!isValidGithubUrl(hero.github_url || "")) {
+      toast({ title: "Invalid GitHub URL", description: "Use https://github.com/username", variant: "destructive" });
+      return;
+    }
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
@@ -146,6 +153,18 @@ const AdminDashboard = () => {
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
+  };
+
+  const saveGithubUrl = async () => {
+    if (!hero) return;
+    const url = (hero.github_url || "").trim();
+    if (!isValidGithubUrl(url)) {
+      toast({ title: "Invalid GitHub URL", description: "Must look like https://github.com/username", variant: "destructive" });
+      return;
+    }
+    const { error } = await (supabase as any).from("site_hero").update({ github_url: url }).eq("id", hero.id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { setHero({ ...hero, github_url: url }); toast({ title: "GitHub profile saved!", description: "Your website is now using the new URL." }); invalidateAll(); }
   };
 
   const uploadHeroPhoto = async (file: File) => {
@@ -372,6 +391,36 @@ const AdminDashboard = () => {
                         )}
                       </div>
                     </div>
+                    {/* Dedicated GitHub Profile Section */}
+                    <div className="p-4 rounded-lg border border-primary/30 bg-primary/5 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Github className="h-5 w-5 text-primary" />
+                        <h3 className="text-base font-semibold text-foreground">GitHub Profile</h3>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Full GitHub profile URL. Used across the site — updates instantly on save.</p>
+                      <Input
+                        placeholder="https://github.com/username"
+                        value={hero.github_url || ""}
+                        onChange={e => setHero({ ...hero, github_url: e.target.value })}
+                        className={!isValidGithubUrl(hero.github_url || "") ? "border-destructive" : ""}
+                      />
+                      {!isValidGithubUrl(hero.github_url || "") && (
+                        <p className="text-xs text-destructive">Invalid format. Example: https://github.com/username</p>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <Button onClick={saveGithubUrl} size="sm" className="gap-2">
+                          <Save className="h-4 w-4" /> Save GitHub URL
+                        </Button>
+                        {hero.github_url && isValidGithubUrl(hero.github_url) && (
+                          <Button asChild variant="outline" size="sm" className="gap-2">
+                            <a href={hero.github_url} target="_blank" rel="noopener noreferrer">
+                              <Github className="h-4 w-4" /> View GitHub Profile
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-4">
                       {[
                         { label: "Full Name", key: "full_name", icon: User },
@@ -379,7 +428,6 @@ const AdminDashboard = () => {
                         { label: "Email", key: "email", icon: Mail },
                         { label: "Phone", key: "phone", icon: Phone },
                         { label: "LinkedIn URL", key: "linkedin_url", icon: Linkedin },
-                        { label: "GitHub URL", key: "github_url", icon: Github },
                         { label: "Twitter/X URL", key: "twitter_url", icon: Twitter },
                         { label: "Instagram URL", key: "instagram_url", icon: Instagram },
                         { label: "YouTube URL", key: "youtube_url", icon: Youtube },
@@ -388,6 +436,7 @@ const AdminDashboard = () => {
                         { label: "Other URL", key: "other_url", icon: Link },
                         { label: "Other URL Label", key: "other_url_label", icon: Tag },
                       ].map(f => (
+
                         <div key={f.key}>
                           <label className="text-sm font-medium text-foreground flex items-center gap-2">
                             <f.icon className="h-4 w-4 text-primary" />
