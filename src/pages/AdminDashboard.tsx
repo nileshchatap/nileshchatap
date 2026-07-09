@@ -436,20 +436,7 @@ const AdminDashboard = () => {
                         { label: "Other URL", key: "other_url", icon: Link },
                         { label: "Other URL Label", key: "other_url_label", icon: Tag },
                       ].map(f => (
-                        <div key={f.key}>
-                        { label: "Location", key: "location", icon: MapPin },
-                        { label: "Email", key: "email", icon: Mail },
-                        { label: "Phone", key: "phone", icon: Phone },
-                        { label: "LinkedIn URL", key: "linkedin_url", icon: Linkedin },
-                        { label: "GitHub URL", key: "github_url", icon: Github },
-                        { label: "Twitter/X URL", key: "twitter_url", icon: Twitter },
-                        { label: "Instagram URL", key: "instagram_url", icon: Instagram },
-                        { label: "YouTube URL", key: "youtube_url", icon: Youtube },
-                        { label: "Kaggle URL", key: "kaggle_url", icon: Globe },
-                        { label: "Website URL", key: "website_url", icon: Globe },
-                        { label: "Other URL", key: "other_url", icon: Link },
-                        { label: "Other URL Label", key: "other_url_label", icon: Tag },
-                      ].map(f => (
+
                         <div key={f.key}>
                           <label className="text-sm font-medium text-foreground flex items-center gap-2">
                             <f.icon className="h-4 w-4 text-primary" />
