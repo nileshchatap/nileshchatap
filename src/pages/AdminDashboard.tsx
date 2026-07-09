@@ -134,8 +134,15 @@ const AdminDashboard = () => {
 
   const handleLogout = async () => { await supabase.auth.signOut(); navigate("/admin"); };
 
+  const isValidGithubUrl = (url: string) =>
+    !url || /^https:\/\/(www\.)?github\.com\/[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}\/?$/.test(url.trim());
+
   const saveHero = async () => {
     if (!hero) return;
+    if (!isValidGithubUrl(hero.github_url || "")) {
+      toast({ title: "Invalid GitHub URL", description: "Use https://github.com/username", variant: "destructive" });
+      return;
+    }
     const { error } = await supabase.from("site_hero").update({
       full_name: hero.full_name, tagline: hero.tagline, location: hero.location,
       email: hero.email, phone: hero.phone, linkedin_url: hero.linkedin_url, github_url: hero.github_url,
@@ -146,6 +153,18 @@ const AdminDashboard = () => {
     } as any).eq("id", hero.id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Hero updated!" }); invalidateAll(); }
+  };
+
+  const saveGithubUrl = async () => {
+    if (!hero) return;
+    const url = (hero.github_url || "").trim();
+    if (!isValidGithubUrl(url)) {
+      toast({ title: "Invalid GitHub URL", description: "Must look like https://github.com/username", variant: "destructive" });
+      return;
+    }
+    const { error } = await (supabase as any).from("site_hero").update({ github_url: url }).eq("id", hero.id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { setHero({ ...hero, github_url: url }); toast({ title: "GitHub profile saved!", description: "Your website is now using the new URL." }); invalidateAll(); }
   };
 
   const uploadHeroPhoto = async (file: File) => {
