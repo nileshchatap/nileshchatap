@@ -391,9 +391,52 @@ const AdminDashboard = () => {
                         )}
                       </div>
                     </div>
+                    {/* Dedicated GitHub Profile Section */}
+                    <div className="p-4 rounded-lg border border-primary/30 bg-primary/5 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Github className="h-5 w-5 text-primary" />
+                        <h3 className="text-base font-semibold text-foreground">GitHub Profile</h3>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Full GitHub profile URL. Used across the site — updates instantly on save.</p>
+                      <Input
+                        placeholder="https://github.com/username"
+                        value={hero.github_url || ""}
+                        onChange={e => setHero({ ...hero, github_url: e.target.value })}
+                        className={!isValidGithubUrl(hero.github_url || "") ? "border-destructive" : ""}
+                      />
+                      {!isValidGithubUrl(hero.github_url || "") && (
+                        <p className="text-xs text-destructive">Invalid format. Example: https://github.com/username</p>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <Button onClick={saveGithubUrl} size="sm" className="gap-2">
+                          <Save className="h-4 w-4" /> Save GitHub URL
+                        </Button>
+                        {hero.github_url && isValidGithubUrl(hero.github_url) && (
+                          <Button asChild variant="outline" size="sm" className="gap-2">
+                            <a href={hero.github_url} target="_blank" rel="noopener noreferrer">
+                              <Github className="h-4 w-4" /> View GitHub Profile
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-4">
                       {[
                         { label: "Full Name", key: "full_name", icon: User },
+                        { label: "Location", key: "location", icon: MapPin },
+                        { label: "Email", key: "email", icon: Mail },
+                        { label: "Phone", key: "phone", icon: Phone },
+                        { label: "LinkedIn URL", key: "linkedin_url", icon: Linkedin },
+                        { label: "Twitter/X URL", key: "twitter_url", icon: Twitter },
+                        { label: "Instagram URL", key: "instagram_url", icon: Instagram },
+                        { label: "YouTube URL", key: "youtube_url", icon: Youtube },
+                        { label: "Kaggle URL", key: "kaggle_url", icon: Globe },
+                        { label: "Website URL", key: "website_url", icon: Globe },
+                        { label: "Other URL", key: "other_url", icon: Link },
+                        { label: "Other URL Label", key: "other_url_label", icon: Tag },
+                      ].map(f => (
+                        <div key={f.key}>
                         { label: "Location", key: "location", icon: MapPin },
                         { label: "Email", key: "email", icon: Mail },
                         { label: "Phone", key: "phone", icon: Phone },
