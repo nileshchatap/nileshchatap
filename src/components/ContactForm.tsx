@@ -67,16 +67,8 @@ const ContactForm = () => {
       <div className="absolute top-10 right-10 w-60 h-60 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-10 left-10 w-72 h-72 bg-accent/8 rounded-full blur-3xl" />
       <div className="container mx-auto px-6 relative z-10">
-        <motion.h2
-          className="text-3xl md:text-4xl font-bold text-hero-foreground mb-12"
-          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          Get in Touch
-        </motion.h2>
+        <div className="text-center mb-12" />
+
 
         <div className="grid lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
           {/* Info Cards */}
