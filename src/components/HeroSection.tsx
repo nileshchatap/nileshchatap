@@ -1,4 +1,4 @@
-import { Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download, Twitter, Instagram, Youtube, Globe } from "lucide-react";
+import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download, Twitter, Instagram, Youtube, Globe } from "lucide-react";
 import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
