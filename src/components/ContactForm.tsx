@@ -3,38 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Send, MessageCircle, Phone, Mail, Linkedin, Github, Twitter, Instagram, Youtube, Globe } from "lucide-react";
+import { Send, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { useHero } from "@/hooks/useSiteContent";
-
-const contactCardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, type: "spring" as const, stiffness: 100 },
-  }),
-};
 
 const ContactForm = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
-  const { data: hero } = useHero();
-
-  const email = hero?.email ?? "";
-  const phone = hero?.phone ?? "";
-  const linkedinUrl = hero?.linkedin_url ?? "";
-  const githubUrl = hero?.github_url ?? "";
-  const twitterUrl = (hero as any)?.twitter_url ?? "";
-  const instagramUrl = (hero as any)?.instagram_url ?? "";
-  const youtubeUrl = (hero as any)?.youtube_url ?? "";
-  const websiteUrl = (hero as any)?.website_url ?? "";
-  const kaggleUrl = (hero as any)?.kaggle_url ?? "";
-  const otherUrl = (hero as any)?.other_url ?? "";
-  const otherUrlLabel = (hero as any)?.other_url_label ?? "Other";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,19 +26,6 @@ const ContactForm = () => {
     }
   };
 
-  const infoCards = [
-    ...(phone ? [{ icon: Phone, label: "Phone", value: phone, href: `tel:${phone}` }] : []),
-    ...(email ? [{ icon: Mail, label: "Email", value: email, href: `mailto:${email}` }] : []),
-    ...(linkedinUrl ? [{ icon: Linkedin, label: "LinkedIn", value: "Connect on LinkedIn", href: linkedinUrl, external: true }] : []),
-    ...(githubUrl ? [{ icon: Github, label: "GitHub", value: githubUrl.replace("https://github.com/", ""), href: githubUrl, external: true }] : []),
-    ...(twitterUrl ? [{ icon: Twitter, label: "Twitter/X", value: "Follow on X", href: twitterUrl, external: true }] : []),
-    ...(instagramUrl ? [{ icon: Instagram, label: "Instagram", value: "Follow on Instagram", href: instagramUrl, external: true }] : []),
-    ...(youtubeUrl ? [{ icon: Youtube, label: "YouTube", value: "Subscribe on YouTube", href: youtubeUrl, external: true }] : []),
-    ...(kaggleUrl ? [{ icon: Globe, label: "Kaggle", value: "View on Kaggle", href: kaggleUrl, external: true }] : []),
-    ...(websiteUrl ? [{ icon: Globe, label: "Website", value: "Visit Website", href: websiteUrl, external: true }] : []),
-    ...(otherUrl ? [{ icon: Globe, label: otherUrlLabel, value: otherUrlLabel, href: otherUrl, external: true }] : []),
-  ];
-
   return (
     <section id="contact" className="py-24 hero-gradient relative overflow-hidden">
       <div className="absolute top-10 right-10 w-60 h-60 bg-primary/10 rounded-full blur-3xl" />
@@ -69,55 +33,7 @@ const ContactForm = () => {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-12" />
 
-
-        <div className="grid lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
-          {/* Info Cards */}
-          <div className="space-y-4">
-            {infoCards.map((card, i) => (
-              <motion.a
-                key={card.label}
-                href={card.href}
-                target={card.external ? "_blank" : undefined}
-                rel={card.external ? "noopener noreferrer" : undefined}
-                custom={i}
-                variants={contactCardVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="flex items-center gap-4 p-5 rounded-2xl glass-dark border border-white/10 hover:border-primary/40 transition-all hover:scale-[1.02] group cursor-pointer block"
-              >
-                <div className="p-3 rounded-xl bg-primary/20 group-hover:bg-primary/30 transition-colors">
-                  <card.icon className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs text-hero-muted uppercase tracking-wider">{card.label}</p>
-                  <p className="text-base font-semibold text-hero-foreground">{card.value}</p>
-                </div>
-              </motion.a>
-            ))}
-
-            {/* Action Buttons */}
-            <motion.div
-              className="flex gap-3 pt-4"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            >
-              {phone && (
-                <Button size="lg" className="flex-1 gap-2 rounded-2xl py-6 bg-gradient-to-r from-primary to-accent glow-primary hover:scale-105 transition-transform" asChild>
-                  <a href={`tel:${phone}`}><Phone className="h-5 w-5" /> Call Now</a>
-                </Button>
-              )}
-              {linkedinUrl && (
-                <Button size="lg" variant="outline" className="flex-1 gap-2 rounded-2xl py-6 border-white/20 bg-white/5 text-hero-foreground hover:bg-white/10 hover:scale-105 transition-transform" asChild>
-                  <a href={linkedinUrl} target="_blank" rel="noopener noreferrer"><Linkedin className="h-5 w-5" /> LinkedIn</a>
-                </Button>
-              )}
-            </motion.div>
-          </div>
-
-          {/* Contact Form */}
+        <div className="max-w-xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
