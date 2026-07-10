@@ -1,4 +1,4 @@
-import { Mail, Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download, Twitter, Instagram, Youtube, Globe } from "lucide-react";
+import { Phone, Linkedin, MapPin, Github, Eye, Sparkles, ArrowDown, Download, Twitter, Instagram, Youtube, Globe } from "lucide-react";
 import defaultPhoto from "@/assets/admin-photo.jpg";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -112,6 +112,7 @@ const HeroSection = () => {
             <Button size="lg" variant="outline" className="gap-2 text-base px-8 py-6 rounded-2xl shadow-xl hover:scale-105 transition-transform border-white/40 bg-white/10 text-white hover:bg-white/20" asChild>
               <a href="#contact"><Mail className="h-5 w-5" /> Get In Touch</a>
             </Button>
+
           </motion.div>
 
           <motion.div className="mt-14" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3 }}>
