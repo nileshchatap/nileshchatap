@@ -44,12 +44,23 @@ const AdminDashboard = () => {
   const [visitors, setVisitors] = useState<any[]>([]);
   const [visitorCount, setVisitorCount] = useState(0);
 
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [seo, setSeo] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
+
   const [newExp, setNewExp] = useState({ company: "", role: "", period: "", location: "" });
   const [newEdu, setNewEdu] = useState({ institution: "", degree: "", period: "" });
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
   const [newStat, setNewStat] = useState({ icon: "Award", value: "", label: "" });
+  const [newAch, setNewAch] = useState({ title: "", description: "", date: "", icon: "Award" });
+  const [newSvc, setNewSvc] = useState({ title: "", description: "", icon: "Sparkles", price: "" });
+  const [newTest, setNewTest] = useState({ author_name: "", role: "", company: "", quote: "", avatar_url: "" });
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [resumeUploading, setResumeUploading] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
