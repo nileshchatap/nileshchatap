@@ -289,6 +289,53 @@ const AdminDashboard = () => {
     loadAll(); invalidateAll();
   };
 
+  const addAchievement = async () => {
+    if (!newAch.title.trim()) return;
+    await (supabase as any).from("site_achievements").insert({ ...newAch, sort_order: achievements.length });
+    setNewAch({ title: "", description: "", date: "", icon: "Award" });
+    loadAll(); toast({ title: "Achievement added" });
+  };
+  const addService = async () => {
+    if (!newSvc.title.trim()) return;
+    await (supabase as any).from("site_services").insert({ ...newSvc, sort_order: services.length });
+    setNewSvc({ title: "", description: "", icon: "Sparkles", price: "" });
+    loadAll(); toast({ title: "Service added" });
+  };
+  const addTestimonial = async () => {
+    if (!newTest.author_name.trim() || !newTest.quote.trim()) return;
+    await (supabase as any).from("site_testimonials").insert({ ...newTest, sort_order: testimonials.length });
+    setNewTest({ author_name: "", role: "", company: "", quote: "", avatar_url: "" });
+    loadAll(); toast({ title: "Testimonial added" });
+  };
+  const uploadGalleryImage = async (file: File, title: string) => {
+    setGalleryUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `gallery/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setGalleryUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
+    await (supabase as any).from("site_gallery").insert({ title, image_url: publicUrl, sort_order: gallery.length });
+    setGalleryUploading(false); loadAll(); toast({ title: "Gallery image added" });
+  };
+  const saveSeo = async () => {
+    if (!seo) return;
+    const payload = { meta_title: seo.meta_title, meta_description: seo.meta_description, keywords: seo.keywords, og_image_url: seo.og_image_url, updated_at: new Date().toISOString() };
+    const res = seo.id
+      ? await (supabase as any).from("site_seo").update(payload).eq("id", seo.id)
+      : await (supabase as any).from("site_seo").insert(payload);
+    if (res.error) toast({ title: "Error", description: res.error.message, variant: "destructive" });
+    else { toast({ title: "SEO settings saved" }); loadAll(); }
+  };
+  const saveSettings = async () => {
+    if (!settings) return;
+    const payload = { site_name: settings.site_name, favicon_url: settings.favicon_url, primary_color: settings.primary_color, accent_color: settings.accent_color, notification_email: settings.notification_email, updated_at: new Date().toISOString() };
+    const res = settings.id
+      ? await (supabase as any).from("site_settings").update(payload).eq("id", settings.id)
+      : await (supabase as any).from("site_settings").insert(payload);
+    if (res.error) toast({ title: "Error", description: res.error.message, variant: "destructive" });
+    else { toast({ title: "Website settings saved" }); loadAll(); }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><p className="text-muted-foreground">Loading...</p></div>;
 
   return (
