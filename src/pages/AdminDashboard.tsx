@@ -44,12 +44,23 @@ const AdminDashboard = () => {
   const [visitors, setVisitors] = useState<any[]>([]);
   const [visitorCount, setVisitorCount] = useState(0);
 
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [seo, setSeo] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
+
   const [newExp, setNewExp] = useState({ company: "", role: "", period: "", location: "" });
   const [newEdu, setNewEdu] = useState({ institution: "", degree: "", period: "" });
   const [newSkill, setNewSkill] = useState("");
   const [newCert, setNewCert] = useState("");
   const [newProject, setNewProject] = useState({ title: "", bullets: "", project_url: "" });
   const [newStat, setNewStat] = useState({ icon: "Award", value: "", label: "" });
+  const [newAch, setNewAch] = useState({ title: "", description: "", date: "", icon: "Award" });
+  const [newSvc, setNewSvc] = useState({ title: "", description: "", icon: "Sparkles", price: "" });
+  const [newTest, setNewTest] = useState({ author_name: "", role: "", company: "", quote: "", avatar_url: "" });
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [resumeUploading, setResumeUploading] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
@@ -69,7 +80,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis, ach, svc, gal, tst, se, se2] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -81,6 +92,12 @@ const AdminDashboard = () => {
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("site_about").select("*").limit(1).single(),
       (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }),
+      (supabase as any).from("site_achievements").select("*").order("sort_order"),
+      (supabase as any).from("site_services").select("*").order("sort_order"),
+      (supabase as any).from("site_gallery").select("*").order("sort_order"),
+      (supabase as any).from("site_testimonials").select("*").order("sort_order"),
+      (supabase as any).from("site_seo").select("*").limit(1).maybeSingle(),
+      (supabase as any).from("site_settings").select("*").limit(1).maybeSingle(),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -96,6 +113,12 @@ const AdminDashboard = () => {
     setVisitors(visitorRows);
     const uniqueIds = new Set(visitorRows.map((v: any) => v.visitor_id));
     setVisitorCount(uniqueIds.size);
+    setAchievements(ach.data || []);
+    setServices(svc.data || []);
+    setGallery(gal.data || []);
+    setTestimonials(tst.data || []);
+    setSeo(se.data);
+    setSettings(se2.data);
     setLoading(false);
   };
 
@@ -266,6 +289,53 @@ const AdminDashboard = () => {
     loadAll(); invalidateAll();
   };
 
+  const addAchievement = async () => {
+    if (!newAch.title.trim()) return;
+    await (supabase as any).from("site_achievements").insert({ ...newAch, sort_order: achievements.length });
+    setNewAch({ title: "", description: "", date: "", icon: "Award" });
+    loadAll(); toast({ title: "Achievement added" });
+  };
+  const addService = async () => {
+    if (!newSvc.title.trim()) return;
+    await (supabase as any).from("site_services").insert({ ...newSvc, sort_order: services.length });
+    setNewSvc({ title: "", description: "", icon: "Sparkles", price: "" });
+    loadAll(); toast({ title: "Service added" });
+  };
+  const addTestimonial = async () => {
+    if (!newTest.author_name.trim() || !newTest.quote.trim()) return;
+    await (supabase as any).from("site_testimonials").insert({ ...newTest, sort_order: testimonials.length });
+    setNewTest({ author_name: "", role: "", company: "", quote: "", avatar_url: "" });
+    loadAll(); toast({ title: "Testimonial added" });
+  };
+  const uploadGalleryImage = async (file: File, title: string) => {
+    setGalleryUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `gallery/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: false });
+    if (error) { toast({ title: "Upload failed", description: error.message, variant: "destructive" }); setGalleryUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("profile-photos").getPublicUrl(path);
+    await (supabase as any).from("site_gallery").insert({ title, image_url: publicUrl, sort_order: gallery.length });
+    setGalleryUploading(false); loadAll(); toast({ title: "Gallery image added" });
+  };
+  const saveSeo = async () => {
+    if (!seo) return;
+    const payload = { meta_title: seo.meta_title, meta_description: seo.meta_description, keywords: seo.keywords, og_image_url: seo.og_image_url, updated_at: new Date().toISOString() };
+    const res = seo.id
+      ? await (supabase as any).from("site_seo").update(payload).eq("id", seo.id)
+      : await (supabase as any).from("site_seo").insert(payload);
+    if (res.error) toast({ title: "Error", description: res.error.message, variant: "destructive" });
+    else { toast({ title: "SEO settings saved" }); loadAll(); }
+  };
+  const saveSettings = async () => {
+    if (!settings) return;
+    const payload = { site_name: settings.site_name, favicon_url: settings.favicon_url, primary_color: settings.primary_color, accent_color: settings.accent_color, notification_email: settings.notification_email, updated_at: new Date().toISOString() };
+    const res = settings.id
+      ? await (supabase as any).from("site_settings").update(payload).eq("id", settings.id)
+      : await (supabase as any).from("site_settings").insert(payload);
+    if (res.error) toast({ title: "Error", description: res.error.message, variant: "destructive" });
+    else { toast({ title: "Website settings saved" }); loadAll(); }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-background"><p className="text-muted-foreground">Loading...</p></div>;
 
   return (
@@ -294,6 +364,12 @@ const AdminDashboard = () => {
             <TabsTrigger value="certifications">Certifications</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="stats">Stats</TabsTrigger>
+            <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
+            <TabsTrigger value="seo">SEO</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="submissions">Submissions ({submissions.length})</TabsTrigger>
             <TabsTrigger value="subscribers">Subscribers ({subscribers.length})</TabsTrigger>
             <TabsTrigger value="visitors">Visitors ({visitorCount})</TabsTrigger>
@@ -1258,6 +1334,215 @@ const AdminDashboard = () => {
                       </TableBody>
                     </Table>
                   </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Achievements */}
+          <TabsContent value="achievements">
+            <Card>
+              <CardHeader><CardTitle>Achievements</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-4 gap-2">
+                  <Input placeholder="Title" value={newAch.title} onChange={e => setNewAch({ ...newAch, title: e.target.value })} />
+                  <Input placeholder="Date (e.g. 2024)" value={newAch.date} onChange={e => setNewAch({ ...newAch, date: e.target.value })} />
+                  <Input placeholder="Icon (Award, Trophy…)" value={newAch.icon} onChange={e => setNewAch({ ...newAch, icon: e.target.value })} />
+                  <Button onClick={addAchievement} className="gap-2"><Plus className="h-4 w-4" /> Add</Button>
+                </div>
+                <Textarea placeholder="Description" value={newAch.description} onChange={e => setNewAch({ ...newAch, description: e.target.value })} />
+                <div className="space-y-2">
+                  {achievements.map(a => (
+                    <div key={a.id} className="flex items-start gap-2 p-3 rounded border border-border">
+                      <div className="flex-1 space-y-2">
+                        <Input value={a.title} onChange={e => setAchievements(prev => prev.map(x => x.id === a.id ? { ...x, title: e.target.value } : x))} placeholder="Title" />
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input value={a.date || ""} onChange={e => setAchievements(prev => prev.map(x => x.id === a.id ? { ...x, date: e.target.value } : x))} placeholder="Date" />
+                          <Input value={a.icon || ""} onChange={e => setAchievements(prev => prev.map(x => x.id === a.id ? { ...x, icon: e.target.value } : x))} placeholder="Icon" />
+                        </div>
+                        <Textarea value={a.description || ""} onChange={e => setAchievements(prev => prev.map(x => x.id === a.id ? { ...x, description: e.target.value } : x))} placeholder="Description" />
+                        <Button size="sm" onClick={async () => {
+                          await (supabase as any).from("site_achievements").update({ title: a.title, date: a.date, icon: a.icon, description: a.description }).eq("id", a.id);
+                          toast({ title: "Saved" });
+                        }} className="gap-2"><Save className="h-4 w-4" /> Save</Button>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => deleteItem("site_achievements", a.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Services */}
+          <TabsContent value="services">
+            <Card>
+              <CardHeader><CardTitle>Services</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-4 gap-2">
+                  <Input placeholder="Title" value={newSvc.title} onChange={e => setNewSvc({ ...newSvc, title: e.target.value })} />
+                  <Input placeholder="Icon (Sparkles…)" value={newSvc.icon} onChange={e => setNewSvc({ ...newSvc, icon: e.target.value })} />
+                  <Input placeholder="Price (optional)" value={newSvc.price} onChange={e => setNewSvc({ ...newSvc, price: e.target.value })} />
+                  <Button onClick={addService} className="gap-2"><Plus className="h-4 w-4" /> Add</Button>
+                </div>
+                <Textarea placeholder="Description" value={newSvc.description} onChange={e => setNewSvc({ ...newSvc, description: e.target.value })} />
+                <div className="space-y-2">
+                  {services.map(s => (
+                    <div key={s.id} className="flex items-start gap-2 p-3 rounded border border-border">
+                      <div className="flex-1 space-y-2">
+                        <div className="grid grid-cols-3 gap-2">
+                          <Input value={s.title} onChange={e => setServices(prev => prev.map(x => x.id === s.id ? { ...x, title: e.target.value } : x))} placeholder="Title" />
+                          <Input value={s.icon || ""} onChange={e => setServices(prev => prev.map(x => x.id === s.id ? { ...x, icon: e.target.value } : x))} placeholder="Icon" />
+                          <Input value={s.price || ""} onChange={e => setServices(prev => prev.map(x => x.id === s.id ? { ...x, price: e.target.value } : x))} placeholder="Price" />
+                        </div>
+                        <Textarea value={s.description || ""} onChange={e => setServices(prev => prev.map(x => x.id === s.id ? { ...x, description: e.target.value } : x))} placeholder="Description" />
+                        <Button size="sm" onClick={async () => {
+                          await (supabase as any).from("site_services").update({ title: s.title, icon: s.icon, price: s.price, description: s.description }).eq("id", s.id);
+                          toast({ title: "Saved" });
+                        }} className="gap-2"><Save className="h-4 w-4" /> Save</Button>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => deleteItem("site_services", s.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Gallery */}
+          <TabsContent value="gallery">
+            <Card>
+              <CardHeader><CardTitle>Gallery</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <label className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 rounded-md bg-primary text-primary-foreground w-fit">
+                  <Upload className="h-4 w-4" />
+                  <span>{galleryUploading ? "Uploading..." : "Upload image"}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={e => {
+                    const f = e.target.files?.[0]; if (f) uploadGalleryImage(f, f.name.replace(/\.[^.]+$/, ""));
+                  }} />
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {gallery.map(g => (
+                    <div key={g.id} className="border border-border rounded overflow-hidden">
+                      <img src={g.image_url} alt={g.title} className="w-full h-32 object-cover" />
+                      <div className="p-2 space-y-1">
+                        <Input value={g.title || ""} onChange={e => setGallery(prev => prev.map(x => x.id === g.id ? { ...x, title: e.target.value } : x))} placeholder="Title" className="text-xs h-8" />
+                        <Input value={g.caption || ""} onChange={e => setGallery(prev => prev.map(x => x.id === g.id ? { ...x, caption: e.target.value } : x))} placeholder="Caption" className="text-xs h-8" />
+                        <div className="flex gap-1">
+                          <Button size="sm" className="flex-1 h-7 text-xs" onClick={async () => {
+                            await (supabase as any).from("site_gallery").update({ title: g.title, caption: g.caption }).eq("id", g.id);
+                            toast({ title: "Saved" });
+                          }}>Save</Button>
+                          <Button size="sm" variant="destructive" className="h-7 px-2" onClick={() => deleteItem("site_gallery", g.id)}><Trash2 className="h-3 w-3" /></Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Testimonials */}
+          <TabsContent value="testimonials">
+            <Card>
+              <CardHeader><CardTitle>Testimonials</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-3 gap-2">
+                  <Input placeholder="Author name" value={newTest.author_name} onChange={e => setNewTest({ ...newTest, author_name: e.target.value })} />
+                  <Input placeholder="Role" value={newTest.role} onChange={e => setNewTest({ ...newTest, role: e.target.value })} />
+                  <Input placeholder="Company" value={newTest.company} onChange={e => setNewTest({ ...newTest, company: e.target.value })} />
+                </div>
+                <Input placeholder="Avatar URL (optional)" value={newTest.avatar_url} onChange={e => setNewTest({ ...newTest, avatar_url: e.target.value })} />
+                <Textarea placeholder="Quote" value={newTest.quote} onChange={e => setNewTest({ ...newTest, quote: e.target.value })} />
+                <Button onClick={addTestimonial} className="gap-2"><Plus className="h-4 w-4" /> Add testimonial</Button>
+                <div className="space-y-2">
+                  {testimonials.map(t => (
+                    <div key={t.id} className="flex items-start gap-2 p-3 rounded border border-border">
+                      <div className="flex-1 space-y-2">
+                        <div className="grid grid-cols-3 gap-2">
+                          <Input value={t.author_name} onChange={e => setTestimonials(prev => prev.map(x => x.id === t.id ? { ...x, author_name: e.target.value } : x))} placeholder="Author" />
+                          <Input value={t.role || ""} onChange={e => setTestimonials(prev => prev.map(x => x.id === t.id ? { ...x, role: e.target.value } : x))} placeholder="Role" />
+                          <Input value={t.company || ""} onChange={e => setTestimonials(prev => prev.map(x => x.id === t.id ? { ...x, company: e.target.value } : x))} placeholder="Company" />
+                        </div>
+                        <Input value={t.avatar_url || ""} onChange={e => setTestimonials(prev => prev.map(x => x.id === t.id ? { ...x, avatar_url: e.target.value } : x))} placeholder="Avatar URL" />
+                        <Textarea value={t.quote} onChange={e => setTestimonials(prev => prev.map(x => x.id === t.id ? { ...x, quote: e.target.value } : x))} placeholder="Quote" />
+                        <Button size="sm" onClick={async () => {
+                          await (supabase as any).from("site_testimonials").update({ author_name: t.author_name, role: t.role, company: t.company, avatar_url: t.avatar_url, quote: t.quote }).eq("id", t.id);
+                          toast({ title: "Saved" });
+                        }} className="gap-2"><Save className="h-4 w-4" /> Save</Button>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => deleteItem("site_testimonials", t.id)} className="text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* SEO */}
+          <TabsContent value="seo">
+            <Card>
+              <CardHeader><CardTitle>SEO Settings</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {seo && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium">Meta Title</label>
+                      <Input value={seo.meta_title || ""} onChange={e => setSeo({ ...seo, meta_title: e.target.value })} maxLength={60} />
+                      <p className="text-xs text-muted-foreground mt-1">{(seo.meta_title || "").length}/60 chars</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Meta Description</label>
+                      <Textarea value={seo.meta_description || ""} onChange={e => setSeo({ ...seo, meta_description: e.target.value })} maxLength={160} />
+                      <p className="text-xs text-muted-foreground mt-1">{(seo.meta_description || "").length}/160 chars</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Keywords (comma separated)</label>
+                      <Input value={seo.keywords || ""} onChange={e => setSeo({ ...seo, keywords: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Open Graph Image URL</label>
+                      <Input value={seo.og_image_url || ""} onChange={e => setSeo({ ...seo, og_image_url: e.target.value })} placeholder="https://…" />
+                    </div>
+                    <Button onClick={saveSeo} className="gap-2"><Save className="h-4 w-4" /> Save SEO</Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Settings */}
+          <TabsContent value="settings">
+            <Card>
+              <CardHeader><CardTitle>Website Settings</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {settings && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium">Site Name</label>
+                      <Input value={settings.site_name || ""} onChange={e => setSettings({ ...settings, site_name: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Favicon URL</label>
+                      <Input value={settings.favicon_url || ""} onChange={e => setSettings({ ...settings, favicon_url: e.target.value })} placeholder="/favicon.png" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm font-medium">Primary Color</label>
+                        <Input type="color" value={settings.primary_color || "#8b5cf6"} onChange={e => setSettings({ ...settings, primary_color: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Accent Color</label>
+                        <Input type="color" value={settings.accent_color || "#ec4899"} onChange={e => setSettings({ ...settings, accent_color: e.target.value })} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Notification Email (contact form → admin)</label>
+                      <Input type="email" value={settings.notification_email || ""} onChange={e => setSettings({ ...settings, notification_email: e.target.value })} placeholder="admin@example.com" />
+                    </div>
+                    <Button onClick={saveSettings} className="gap-2"><Save className="h-4 w-4" /> Save Settings</Button>
+                  </>
                 )}
               </CardContent>
             </Card>

@@ -21,6 +21,8 @@ const ContactForm = () => {
     if (error) {
       toast({ title: "Error", description: "Failed to submit. Please try again.", variant: "destructive" });
     } else {
+      // Fire-and-forget admin notification email.
+      supabase.functions.invoke("notify-contact", { body: form }).catch(() => {});
       toast({ title: "Success!", description: "Your message has been submitted." });
       setForm({ name: "", email: "", phone: "", message: "" });
     }
