@@ -80,7 +80,7 @@ const AdminDashboard = () => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis] = await Promise.all([
+    const [sub, h, exp, edu, sk, cert, proj, st, subs, ab, vis, ach, svc, gal, tst, se, se2] = await Promise.all([
       supabase.from("submissions").select("*").order("created_at", { ascending: false }),
       supabase.from("site_hero").select("*").limit(1).single(),
       supabase.from("site_experiences").select("*").order("sort_order"),
@@ -92,6 +92,12 @@ const AdminDashboard = () => {
       (supabase as any).from("newsletter_subscribers").select("*").order("created_at", { ascending: false }),
       (supabase as any).from("site_about").select("*").limit(1).single(),
       (supabase as any).from("site_visitors").select("*").order("visited_at", { ascending: false }),
+      (supabase as any).from("site_achievements").select("*").order("sort_order"),
+      (supabase as any).from("site_services").select("*").order("sort_order"),
+      (supabase as any).from("site_gallery").select("*").order("sort_order"),
+      (supabase as any).from("site_testimonials").select("*").order("sort_order"),
+      (supabase as any).from("site_seo").select("*").limit(1).maybeSingle(),
+      (supabase as any).from("site_settings").select("*").limit(1).maybeSingle(),
     ]);
     setSubmissions(sub.data || []);
     setHero(h.data);
@@ -107,6 +113,12 @@ const AdminDashboard = () => {
     setVisitors(visitorRows);
     const uniqueIds = new Set(visitorRows.map((v: any) => v.visitor_id));
     setVisitorCount(uniqueIds.size);
+    setAchievements(ach.data || []);
+    setServices(svc.data || []);
+    setGallery(gal.data || []);
+    setTestimonials(tst.data || []);
+    setSeo(se.data);
+    setSettings(se2.data);
     setLoading(false);
   };
 
