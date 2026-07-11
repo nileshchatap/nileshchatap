@@ -68,6 +68,36 @@ export type Database = {
         }
         Relationships: []
       }
+      site_achievements: {
+        Row: {
+          created_at: string
+          date: string
+          description: string
+          icon: string
+          id: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          description?: string
+          icon?: string
+          id?: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string
+          icon?: string
+          id?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       site_certifications: {
         Row: {
           id: string
@@ -146,6 +176,33 @@ export type Database = {
           period?: string
           role?: string
           sort_order?: number
+        }
+        Relationships: []
+      }
+      site_gallery: {
+        Row: {
+          caption: string
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          caption?: string
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          title?: string
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          title?: string
         }
         Relationships: []
       }
@@ -245,6 +302,93 @@ export type Database = {
         }
         Relationships: []
       }
+      site_seo: {
+        Row: {
+          id: string
+          keywords: string
+          meta_description: string
+          meta_title: string
+          og_image_url: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          keywords?: string
+          meta_description?: string
+          meta_title?: string
+          og_image_url?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          keywords?: string
+          meta_description?: string
+          meta_title?: string
+          og_image_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_services: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          price: string | null
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          price?: string | null
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          price?: string | null
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          accent_color: string
+          favicon_url: string
+          id: string
+          notification_email: string
+          primary_color: string
+          site_name: string
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          favicon_url?: string
+          id?: string
+          notification_email?: string
+          primary_color?: string
+          site_name?: string
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          favicon_url?: string
+          id?: string
+          notification_email?: string
+          primary_color?: string
+          site_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_skills: {
         Row: {
           id: string
@@ -284,6 +428,39 @@ export type Database = {
           label?: string
           sort_order?: number
           value?: string
+        }
+        Relationships: []
+      }
+      site_testimonials: {
+        Row: {
+          author_name: string
+          avatar_url: string | null
+          company: string
+          created_at: string
+          id: string
+          quote: string
+          role: string
+          sort_order: number
+        }
+        Insert: {
+          author_name: string
+          avatar_url?: string | null
+          company?: string
+          created_at?: string
+          id?: string
+          quote: string
+          role?: string
+          sort_order?: number
+        }
+        Update: {
+          author_name?: string
+          avatar_url?: string | null
+          company?: string
+          created_at?: string
+          id?: string
+          quote?: string
+          role?: string
+          sort_order?: number
         }
         Relationships: []
       }
